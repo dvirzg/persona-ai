@@ -1,59 +1,45 @@
 "use client";
 
-import { Input } from './ui/input';
-import { Label } from './ui/label';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
-export function AuthForm({
-  action,
-  children,
-  defaultEmail = '',
-}: {
-  action: NonNullable<
-    string | ((formData: FormData) => void | Promise<void>) | undefined
-  >;
-  children: React.ReactNode;
+interface AuthFormProps {
+  onSubmit: (formData: FormData) => void;
   defaultEmail?: string;
-}) {
-  return (
-    <form action={action} className="flex flex-col gap-4 px-4 sm:px-16">
-      <div className="flex flex-col gap-2">
-        <Label
-          htmlFor="email"
-          className="text-zinc-600 font-normal dark:text-zinc-400"
-        >
-          Email Address
-        </Label>
+  children: React.ReactNode;
+}
 
+export function AuthForm({ onSubmit, defaultEmail, children }: AuthFormProps) {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    onSubmit(formData);
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="flex flex-col gap-6 px-4 sm:px-16">
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="email">Email</Label>
         <Input
           id="email"
           name="email"
-          className="bg-muted text-md md:text-sm"
           type="email"
-          placeholder="user@acme.com"
-          autoComplete="email"
+          placeholder="you@example.com"
           required
-          autoFocus
           defaultValue={defaultEmail}
         />
       </div>
-
       <div className="flex flex-col gap-2">
-        <Label
-          htmlFor="password"
-          className="text-zinc-600 font-normal dark:text-zinc-400"
-        >
-          Password
-        </Label>
-
+        <Label htmlFor="password">Password</Label>
         <Input
           id="password"
           name="password"
-          className="bg-muted text-md md:text-sm"
           type="password"
+          placeholder="••••••••"
           required
+          minLength={8}
         />
       </div>
-
       {children}
     </form>
   );

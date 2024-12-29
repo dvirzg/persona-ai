@@ -125,7 +125,7 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
       <div className="text-center max-w-2xl">
         <h2 className="text-lg font-medium mb-2">Choose a Conversation Type</h2>
         <p className="text-muted-foreground">
-          Select the type of conversation you'd like to have. Each option is tailored to provide specific guidance and support for your needs.
+          Select the type of conversation you&apos;d like to have. Each option is tailored to provide specific guidance and support for your needs.
         </p>
       </div>
 
@@ -142,7 +142,7 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
           <Button
             variant="ghost"
               onClick={() => handleTypeSelection(type)}
-              className="text-center border rounded-xl px-4 py-4 flex flex-col w-[160px] h-[160px] items-center justify-center gap-4 hover:bg-accent/50 transition-colors"
+              className="text-center border rounded-xl p-4 flex flex-col size-[160px] items-center justify-center gap-4 hover:bg-accent/50 transition-colors"
             >
               <type.icon size={32} className="text-muted-foreground" />
               <span className="font-medium text-sm">{type.title}</span>

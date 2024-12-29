@@ -73,7 +73,7 @@ export default function ExplorePage() {
               <Card key={section.id} className="bg-card border rounded-lg overflow-hidden">
                 <CardHeader className="flex flex-row items-center justify-between p-6">
                   <div className="flex items-center gap-2">
-                    <section.icon className="w-6 h-6 text-blue-500" />
+                    <section.icon className="size-6 text-blue-500" />
                     <CardTitle>{section.title}</CardTitle>
                   </div>
                   <Button
@@ -81,7 +81,7 @@ export default function ExplorePage() {
                     size="icon"
                     onClick={() => setExpandedSection(null)}
                   >
-                    <XIcon className="w-4 h-4" />
+                    <XIcon className="size-4" />
                   </Button>
                 </CardHeader>
                 <CardContent className="p-6 pt-0">
@@ -99,7 +99,7 @@ export default function ExplorePage() {
                 onClick={() => setExpandedSection(section.id)}
               >
                 <CardHeader className="flex flex-row items-center gap-2 p-6">
-                  <section.icon className="w-6 h-6 text-blue-500" />
+                  <section.icon className="size-6 text-blue-500" />
                   <CardTitle>{section.title}</CardTitle>
                 </CardHeader>
                 <CardContent className="p-6 pt-0 text-muted-foreground">

@@ -31,7 +31,7 @@ export function SidebarUserNav({ user }: { user: User }) {
           <span className="truncate max-w-[150px] hidden md:inline-block">
             {user?.email}
           </span>
-          <ChevronDown className="h-4 w-4" />
+          <ChevronDown className="size-4" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[200px]">

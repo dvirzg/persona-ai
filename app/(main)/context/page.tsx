@@ -210,7 +210,7 @@ export default function ContextPage() {
                       }}
                     />
                     <Button variant="outline" size="icon">
-                      <PlusIcon className="h-4 w-4" />
+                      <PlusIcon className="size-4" />
                     </Button>
                   </div>
                 </div>
@@ -245,7 +245,7 @@ export default function ContextPage() {
                       }}
                     />
                     <Button variant="outline" size="icon">
-                      <PlusIcon className="h-4 w-4" />
+                      <PlusIcon className="size-4" />
                     </Button>
                   </div>
                 </div>
@@ -259,7 +259,7 @@ export default function ContextPage() {
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold">Personality Traits</h2>
             <Button variant="outline" size="sm" onClick={handleAddTrait}>
-              <PlusIcon className="h-4 w-4 mr-2" />
+              <PlusIcon className="size-4 mr-2" />
               Add Trait
             </Button>
           </div>
@@ -288,7 +288,7 @@ export default function ContextPage() {
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold">Social Graph</h2>
             <Button variant="outline" size="sm" onClick={() => setShowAddPersonDialog(true)}>
-              <Users2Icon className="h-4 w-4 mr-2" />
+              <Users2Icon className="size-4 mr-2" />
               Add Person
             </Button>
           </div>
@@ -359,7 +359,7 @@ export default function ContextPage() {
             <DialogHeader>
               <DialogTitle>Edit Person</DialogTitle>
               <DialogDescription>
-                Edit person's details in your social graph.
+                Edit person&apos;s details in your social graph.
               </DialogDescription>
             </DialogHeader>
             {selectedPerson && (

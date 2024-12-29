@@ -102,5 +102,95 @@ export const useContextStore = create<ContextState>((set, get) => ({
     }
   },
 
-  // Add other methods for interests, goals, traits, and connections...
+  addInterest: async (interest) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await fetch('/api/context', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          type: 'interest', 
+          data: { interest } 
+        }),
+      });
+      
+      if (!response.ok) throw new Error('Failed to add interest');
+      
+      const data = await response.json();
+      set({ interests: [...get().interests, data] });
+    } catch (error) {
+      set({ error: (error as Error).message });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  addGoal: async (goal) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await fetch('/api/context', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          type: 'goal', 
+          data: { goal, completed: false } 
+        }),
+      });
+      
+      if (!response.ok) throw new Error('Failed to add goal');
+      
+      const data = await response.json();
+      set({ goals: [...get().goals, data] });
+    } catch (error) {
+      set({ error: (error as Error).message });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  addTrait: async (trait) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await fetch('/api/context', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          type: 'trait', 
+          data: { trait } 
+        }),
+      });
+      
+      if (!response.ok) throw new Error('Failed to add trait');
+      
+      const data = await response.json();
+      set({ traits: [...get().traits, data] });
+    } catch (error) {
+      set({ error: (error as Error).message });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  addConnection: async (connection) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await fetch('/api/context', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          type: 'connection', 
+          data: connection 
+        }),
+      });
+      
+      if (!response.ok) throw new Error('Failed to add connection');
+      
+      const data = await response.json();
+      set({ connections: [...get().connections, data] });
+    } catch (error) {
+      set({ error: (error as Error).message });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
 })); 

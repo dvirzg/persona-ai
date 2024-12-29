@@ -208,9 +208,9 @@ export function SocialGraph({ people, onPersonClick }: SocialGraphProps) {
             onClick={() => setIsExpanded(!isExpanded)}
           >
             {isExpanded ? (
-              <Minimize2 className="h-4 w-4" />
+              <Minimize2 className="size-4" />
             ) : (
-              <Maximize2 className="h-4 w-4" />
+              <Maximize2 className="size-4" />
             )}
           </Button>
           <Button
@@ -218,33 +218,33 @@ export function SocialGraph({ people, onPersonClick }: SocialGraphProps) {
             size="icon"
             onClick={handleZoomIn}
           >
-            <ZoomIn className="h-4 w-4" />
+            <ZoomIn className="size-4" />
           </Button>
           <Button
             variant="outline"
             size="icon"
             onClick={handleZoomOut}
           >
-            <ZoomOut className="h-4 w-4" />
+            <ZoomOut className="size-4" />
           </Button>
           <Button
             variant="outline"
             size="icon"
             onClick={handleRecenter}
           >
-            <Crosshair className="h-4 w-4" />
+            <Crosshair className="size-4" />
           </Button>
         </div>
 
         <svg
           ref={svgRef}
-          className="w-full h-full"
+          className="size-full"
           viewBox="0 0 800 800"
           preserveAspectRatio="xMidYMid meet"
         />
 
         {selectedPerson && (
-          <div className="absolute bottom-4 left-4 right-4 bg-card border rounded-lg p-4 shadow-lg">
+          <div className="inset-x-4 absolute bottom-4 flex justify-center">
             <div className="flex justify-between items-start mb-2">
               <div>
                 <h3 className="text-lg font-semibold">{selectedPerson.name}</h3>

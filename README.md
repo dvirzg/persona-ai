@@ -41,7 +41,7 @@ A personalized AI chat application that learns about you through conversations a
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/persona-chat.git
+   git clone https://github.com/dvirzg/persona-ai.git
    cd persona-chat
    ```
 

@@ -76,6 +76,10 @@ export async function login(formData: FormData): Promise<ActionState> {
     return { status: 'invalid_credentials' };
   }
 
+  if (!existingUser.password) {
+    return { status: 'invalid_credentials' };
+  }
+
   const isValidPassword = await verifyPassword(password, existingUser.password);
   if (!isValidPassword) {
     return { status: 'invalid_credentials' };

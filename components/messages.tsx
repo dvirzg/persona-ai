@@ -1,10 +1,10 @@
-import { ChatRequestOptions, Message } from 'ai';
+import { ChatRequestOptions, CreateMessage, Message } from 'ai';
 import { PreviewMessage, ThinkingMessage } from './message';
 import { useScrollToBottom } from './use-scroll-to-bottom';
 import { Overview } from './overview';
 import { memo } from 'react';
 import { Vote } from '@/lib/db/schema';
-import equal from 'fast-deep-equal';
+import { SuggestedActions } from './suggested-actions';
 
 interface MessagesProps {
   chatId: string;
@@ -19,6 +19,10 @@ interface MessagesProps {
   ) => Promise<string | null | undefined>;
   isReadonly: boolean;
   isBlockVisible: boolean;
+  append: (
+    message: Message | CreateMessage,
+    chatRequestOptions?: ChatRequestOptions,
+  ) => Promise<string | null | undefined>;
 }
 
 function PureMessages({
@@ -29,6 +33,7 @@ function PureMessages({
   setMessages,
   reload,
   isReadonly,
+  append,
 }: MessagesProps) {
   const [messagesContainerRef, messagesEndRef] =
     useScrollToBottom<HTMLDivElement>();
@@ -38,7 +43,9 @@ function PureMessages({
       ref={messagesContainerRef}
       className="flex flex-col min-w-0 gap-6 flex-1 overflow-y-scroll pt-4"
     >
-      {/* {messages.length === 0 && <Overview />} */}
+      {messages.length === 0 && !isReadonly && (
+        <SuggestedActions chatId={chatId} append={append} />
+      )}
 
       {messages.map((message, index) => (
         <PreviewMessage
@@ -70,12 +77,9 @@ function PureMessages({
 }
 
 export const Messages = memo(PureMessages, (prevProps, nextProps) => {
-  if (prevProps.isBlockVisible && nextProps.isBlockVisible) return true;
-
   if (prevProps.isLoading !== nextProps.isLoading) return false;
-  if (prevProps.isLoading && nextProps.isLoading) return false;
-  if (prevProps.messages.length !== nextProps.messages.length) return false;
-  if (!equal(prevProps.votes, nextProps.votes)) return false;
-
+  if (prevProps.messages !== nextProps.messages) return false;
+  if (prevProps.votes !== nextProps.votes) return false;
+  if (prevProps.isBlockVisible !== nextProps.isBlockVisible) return false;
   return true;
 });

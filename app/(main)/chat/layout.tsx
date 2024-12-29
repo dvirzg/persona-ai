@@ -1,12 +1,8 @@
 import { cookies } from 'next/headers';
-
 import { AppSidebar } from '@/components/app-sidebar';
-import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
-
-import { auth } from '../(auth)/auth';
+import { SidebarInset } from '@/components/ui/sidebar';
+import { auth } from '../../(auth)/auth';
 import Script from 'next/script';
-
-export const experimental_ppr = true;
 
 export default async function Layout({
   children,
@@ -22,10 +18,16 @@ export default async function Layout({
         src="https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js"
         strategy="beforeInteractive"
       />
-      <SidebarProvider defaultOpen={!isCollapsed}>
-        <AppSidebar user={session?.user} />
-        <SidebarInset>{children}</SidebarInset>
-      </SidebarProvider>
+      <div className="fixed top-16 inset-x-0 bottom-0">
+        <div className="flex h-full">
+          <div className="w-[260px] flex-shrink-0 transition-all duration-300 data-[sidebar-closed=true]:w-[60px]">
+            <AppSidebar user={session?.user} />
+          </div>
+          <div className="flex-1 overflow-auto">
+            {children}
+          </div>
+        </div>
+      </div>
     </>
   );
 }

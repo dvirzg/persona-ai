@@ -104,7 +104,7 @@ A personalized AI chat application that learns about you through conversations a
 ## Project Structure
 
 ```
-├── app/                   # Next.js 13 app directory
+├── app/                   # Next.js 14 app directory
 │   ├── (auth)/           # Authentication routes
 │   ├── (main)/           # Main application routes
 │   └── api/              # API routes

@@ -58,6 +58,9 @@ export default function Page() {
             {' instead.'}
           </p>
         </AuthForm>
+        <Link href="/reset-password" className="text-sm text-blue-500 hover:underline">
+          Forgot Password?
+        </Link>
       </div>
     </div>
   );

@@ -3,6 +3,8 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
+import nodemailer from 'nodemailer';
+import crypto from 'crypto';
 
 import { db } from '@/lib/db';
 import { user } from '@/lib/db/schema';
@@ -93,4 +95,24 @@ export async function login(formData: FormData): Promise<ActionState> {
   }
 
   return { status: 'success' };
+}
+
+// Function to send a password reset email
+export async function sendPasswordResetEmail(email: string, token: string) {
+  const transporter = nodemailer.createTransport({
+    service: 'Gmail', // Use your email service
+    auth: {
+      user: process.env.EMAIL_USER, // Your email
+      pass: process.env.EMAIL_PASS, // Your email password
+    },
+  });
+
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: 'Password Reset Request',
+    text: `You requested a password reset. Click the link to reset your password: ${process.env.FRONTEND_URL}/reset-password?token=${token}`,
+  };
+
+  await transporter.sendMail(mailOptions);
 }

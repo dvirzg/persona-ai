@@ -1,9 +1,16 @@
-import NextAuth from 'next-auth';
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
-import { authConfig } from '@/app/(auth)/auth.config';
+export function middleware(req: NextRequest) {
+  const isAuthenticated = req.cookies.get('user_email');
 
-export default NextAuth(authConfig).auth;
+  if (!isAuthenticated && req.nextUrl.pathname !== '/login') {
+    return NextResponse.redirect(new URL('/login', req.url));
+  }
+
+  return NextResponse.next();
+}
 
 export const config = {
-  matcher: ['/', '/:id', '/api/:path*', '/login', '/register'],
+  matcher: ['/', '/chat/:path*', '/api/:path*'],
 };

@@ -30,6 +30,7 @@ export const {
       },
     }),
   ],
+  // trustHost: true, // to trust localhost and other hosts
   callbacks: {
     async jwt({ token, user }) {
       if (user) {

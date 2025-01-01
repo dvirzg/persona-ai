@@ -5,9 +5,9 @@ import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useSidebar } from '@/components/ui/sidebar';
 import { SidebarUserNav } from '@/components/sidebar-user-nav';
-import { useSession } from 'next-auth/react';
 import { useChat } from 'ai/react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import Cookies from 'js-cookie';
 
 const mainNavItems = [
   {
@@ -28,8 +28,13 @@ export function MainNav() {
   const pathname = usePathname();
   const router = useRouter();
   const { open } = useSidebar();
-  const { data: session } = useSession();
   const { setMessages } = useChat({ id: 'nav' });
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    const email = Cookies.get('user_email');
+    setUserEmail(email || null);
+  }, []);
 
   const handleNavigation = (href: string) => {
     if (href === '/chat') {
@@ -61,7 +66,9 @@ export function MainNav() {
         ))}
       </nav>
       <div className="flex items-center">
-        {session?.user && <SidebarUserNav user={session.user} />}
+        {userEmail && (
+          <SidebarUserNav user={{ email: userEmail }} />
+        )}
       </div>
     </div>
   );

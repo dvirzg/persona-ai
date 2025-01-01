@@ -1,9 +1,10 @@
 'use client';
+
 import { ChevronDown } from 'lucide-react';
 import Image from 'next/image';
-import type { User } from 'next-auth';
-import { signOut } from 'next-auth/react';
 import { useTheme } from 'next-themes';
+import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
 
 import {
   DropdownMenu,
@@ -14,8 +15,19 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 
+type User = {
+  email: string;
+};
+
 export function SidebarUserNav({ user }: { user: User }) {
   const { setTheme, theme } = useTheme();
+  const router = useRouter();
+
+  const handleSignOut = () => {
+    Cookies.remove('user_email');
+    router.push('/login');
+    router.refresh();
+  };
 
   return (
     <DropdownMenu>
@@ -46,11 +58,7 @@ export function SidebarUserNav({ user }: { user: User }) {
           <button
             type="button"
             className="w-full cursor-pointer"
-            onClick={() => {
-              signOut({
-                redirectTo: '/',
-              });
-            }}
+            onClick={handleSignOut}
           >
             Sign out
           </button>

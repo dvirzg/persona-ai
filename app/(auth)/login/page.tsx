@@ -29,9 +29,13 @@ export default function Page() {
       } else if (result.status === 'success') {
         toast.success('Signed in successfully');
         setIsSuccessful(true);
-        router.refresh();
+        window.location.href = '/chat';
       }
     } catch (error) {
+      if (error instanceof Error && error.message === 'NEXT_REDIRECT') {
+        window.location.href = '/chat';
+        return;
+      }
       toast.error('An error occurred');
     }
   };
@@ -57,10 +61,15 @@ export default function Page() {
             </Link>
             {' instead.'}
           </p>
+          <p className="text-center text-sm text-gray-600 mt-2 dark:text-zinc-400">
+            <Link
+              href="/forgot-password"
+              className="font-semibold text-gray-800 hover:underline dark:text-zinc-200"
+            >
+              Forgot your password?
+            </Link>
+          </p>
         </AuthForm>
-        <Link href="/reset-password" className="text-sm text-blue-500 hover:underline">
-          Forgot Password?
-        </Link>
       </div>
     </div>
   );

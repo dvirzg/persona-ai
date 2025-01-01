@@ -43,6 +43,13 @@
       "when": 1735508702754,
       "tag": "0005_cool_secret_warriors",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1735731164572,
+      "tag": "0006_icy_dagger",
+      "breakpoints": true
     }
   ]
 }

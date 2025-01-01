@@ -8,5 +8,9 @@ export async function verifyPassword(
   password: string,
   hashedPassword: string,
 ): Promise<boolean> {
-  return compare(password, hashedPassword);
+  console.log('Verifying password');
+  console.log('Hashed password from DB:', hashedPassword);
+  const result = await compare(password, hashedPassword);
+  console.log('Password verification result:', result);
+  return result;
 } 

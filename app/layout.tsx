@@ -21,17 +21,15 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className="dark"
     >
-      <body className="min-h-screen bg-zinc-950 font-sans antialiased">
+      <body className="min-h-screen font-sans antialiased">
         <Providers>
           <ThemeProvider
             attribute="class"
             defaultTheme="dark"
-            forcedTheme="dark"
             disableTransitionOnChange
           >
-            <div className="relative flex min-h-screen flex-col bg-zinc-950">
+            <div className="relative flex min-h-screen">
               <Toaster position="top-center" />
               {children}
             </div>

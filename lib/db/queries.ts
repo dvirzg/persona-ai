@@ -1,7 +1,7 @@
 import 'server-only';
 
 import { genSaltSync, hashSync } from 'bcrypt-ts';
-import { and, asc, desc, eq, gt, gte } from 'drizzle-orm';
+import { and, asc, desc, eq, gt, gte, sql } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 
@@ -15,20 +15,33 @@ import {
   type Message,
   message,
   vote,
+  passwordResetToken,
 } from './schema';
 import { BlockKind } from '@/components/block';
-
-// Optionally, if not using email/pass login, you can
-// use the Drizzle adapter for Auth.js / NextAuth
-// https://authjs.dev/reference/adapter/drizzle
+import { hashPassword } from '@/lib/password';
 
 // biome-ignore lint: Forbidden non-null assertion.
-const client = postgres(process.env.POSTGRES_URL!);
-const db = drizzle(client);
+const client = postgres(process.env.DATABASE_URL!, { 
+  ssl: 'require',
+  max: 1
+});
+
+// Enable query logging
+const db = drizzle(client, { logger: true });
 
 export async function getUser(email: string): Promise<Array<User>> {
   try {
-    return await db.select().from(user).where(eq(user.email, email));
+    console.log('Attempting to get user with email:', email);
+    const query = sql`SELECT * FROM users WHERE email = ${email}`;
+    console.log('Executing SQL:', query.toString());
+    const result = await db.execute(query);
+    console.log('Get user result:', result);
+    // Convert the raw result to User type
+    return result.map(row => ({
+      id: row.id as string,
+      email: row.email as string,
+      password: row.password as string
+    }));
   } catch (error) {
     console.error('Failed to get user from database');
     throw error;
@@ -36,13 +49,27 @@ export async function getUser(email: string): Promise<Array<User>> {
 }
 
 export async function createUser(email: string, password: string) {
-  const salt = genSaltSync(10);
-  const hash = hashSync(password, salt);
-
+  console.log('Starting user creation for email:', email);
   try {
-    return await db.insert(user).values({ email, password: hash });
+    // Use the same hashPassword function from lib/password.ts
+    const hash = await hashPassword(password);
+    console.log('Password hashed');
+
+    const query = sql`
+      INSERT INTO users (id, email, password)
+      VALUES (gen_random_uuid(), ${email}, ${hash})
+      RETURNING id
+    `;
+    console.log('Executing SQL:', query.toString());
+    const result = await db.execute(query);
+    console.log('User created successfully:', result);
+    return result;
   } catch (error) {
-    console.error('Failed to create user in database');
+    console.error('Failed to create user in database. Error:', error);
+    if (error instanceof Error) {
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+    }
     throw error;
   }
 }
@@ -336,6 +363,48 @@ export async function updateUserPassword(email: string, newPassword: string) {
     await db.update(user).set({ password: hash }).where(eq(user.email, email));
   } catch (error) {
     console.error('Failed to update user password');
+    throw error;
+  }
+}
+
+export async function createPasswordResetToken(userId: string, token: string) {
+  try {
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + 1); // Token expires in 1 hour
+
+    return await db.insert(passwordResetToken).values({
+      userId,
+      token,
+      expiresAt,
+      createdAt: new Date(),
+    });
+  } catch (error) {
+    console.error('Failed to create password reset token');
+    throw error;
+  }
+}
+
+export async function getPasswordResetToken(token: string) {
+  try {
+    const [resetToken] = await db
+      .select()
+      .from(passwordResetToken)
+      .where(eq(passwordResetToken.token, token));
+    
+    return resetToken;
+  } catch (error) {
+    console.error('Failed to get password reset token');
+    throw error;
+  }
+}
+
+export async function deletePasswordResetToken(token: string) {
+  try {
+    return await db
+      .delete(passwordResetToken)
+      .where(eq(passwordResetToken.token, token));
+  } catch (error) {
+    console.error('Failed to delete password reset token');
     throw error;
   }
 }

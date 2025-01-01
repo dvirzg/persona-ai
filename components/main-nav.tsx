@@ -8,6 +8,7 @@ import { SidebarUserNav } from '@/components/sidebar-user-nav';
 import { useChat } from 'ai/react';
 import { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
+import { Logo } from './logo';
 
 const mainNavItems = [
   {
@@ -49,22 +50,25 @@ export function MainNav() {
       className="flex items-center justify-between h-16 px-6"
       data-sidebar-closed={!open}
     >
-      <nav className="flex items-center">
-        {mainNavItems.map((item) => (
-          <button
-            key={item.href}
-            onClick={() => handleNavigation(item.href)}
-            className={cn(
-              'text-sm font-medium transition-colors hover:text-primary mr-6',
-              pathname.startsWith(item.href)
-                ? 'text-primary'
-                : 'text-muted-foreground'
-            )}
-          >
-            {item.title}
-          </button>
-        ))}
-      </nav>
+      <div className="flex items-center gap-8">
+        <Logo />
+        <nav className="flex items-center">
+          {mainNavItems.map((item) => (
+            <button
+              key={item.href}
+              onClick={() => handleNavigation(item.href)}
+              className={cn(
+                'text-sm font-medium transition-colors hover:text-primary mr-6',
+                pathname.startsWith(item.href)
+                  ? 'text-primary'
+                  : 'text-muted-foreground'
+              )}
+            >
+              {item.title}
+            </button>
+          ))}
+        </nav>
+      </div>
       <div className="flex items-center">
         {userEmail && (
           <SidebarUserNav user={{ email: userEmail }} />

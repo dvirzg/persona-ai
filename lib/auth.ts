@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import nodemailer from 'nodemailer';
+import { createTransport } from 'nodemailer';
 
 // Function to generate a password reset token
 export function generateResetToken() {
@@ -8,7 +8,7 @@ export function generateResetToken() {
 
 // Function to send a password reset email
 export async function sendPasswordResetEmail(email: string, token: string) {
-  const transporter = nodemailer.createTransport({
+  const transporter = createTransport({
     service: 'Gmail', // Use your email service
     auth: {
       user: process.env.EMAIL_USER, // Your email

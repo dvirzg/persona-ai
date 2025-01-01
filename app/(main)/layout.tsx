@@ -4,8 +4,8 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 import { cookies } from 'next/headers';
 
 export const metadata: Metadata = {
-  title: 'Persona',
-  description: 'Chat with Personalized AI',
+  title: 'Persona - Personalized AI',
+  description: 'Chat with your personal AI companion',
 };
 
 export default async function MainLayout({

@@ -2,7 +2,12 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['avatar.vercel.sh'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'avatar.vercel.sh',
+      },
+    ],
   },
   async redirects() {
     return [
@@ -10,6 +15,19 @@ const nextConfig = {
         source: '/',
         destination: '/chat',
         permanent: false,
+      },
+    ];
+  },
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY',
+          },
+        ],
       },
     ];
   },

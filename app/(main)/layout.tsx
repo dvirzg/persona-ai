@@ -1,6 +1,12 @@
+import type { Metadata } from 'next';
 import { MainNav } from '@/components/main-nav';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { cookies } from 'next/headers';
+
+export const metadata: Metadata = {
+  title: 'Persona',
+  description: 'Chat with Personalized AI',
+};
 
 export default async function MainLayout({
   children,

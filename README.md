@@ -1,6 +1,6 @@
 # PersonaChat AI
 
-A personalized AI chat application that learns about you through conversations and provides insights about your personality, conversation patterns, and interests. Built with Next.js 13, Vercel AI SDK, and Shadcn UI.
+A personalized AI chat app that learns about you through conversations and provides insights about your personality, conversation patterns, and interests. Built with Next.js 13, Vercel AI SDK, and Shadcn UI.
 
 ## Features
 

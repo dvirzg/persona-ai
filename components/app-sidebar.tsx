@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/sidebar';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 import { useChat } from 'ai/react';
+import { cn } from '@/lib/utils';
 
 export function AppSidebar({ user }: { user: User | undefined }) {
   const router = useRouter();
@@ -29,7 +30,11 @@ export function AppSidebar({ user }: { user: User | undefined }) {
   };
 
   return (
-    <Sidebar className="group-data-[side=left]:border-r mt-16 flex flex-col h-[calc(100vh-4rem)] bg-zinc-50 dark:bg-zinc-900 w-[260px] data-[state=collapsed]:w-[60px] transition-all duration-300">
+    <Sidebar className={cn(
+      "group-data-[side=left]:border-r mt-16 flex flex-col h-[calc(100vh-4rem)]",
+      "bg-zinc-50 dark:bg-zinc-900 w-[260px] data-[state=collapsed]:w-[60px] transition-all duration-300",
+      "data-[mobile=true]:mt-0 data-[mobile=true]:h-screen data-[mobile=true]:w-full data-[mobile=true]:pt-16"
+    )}>
       <SidebarHeader>
         <SidebarMenu>
           <div className="flex flex-row justify-between items-center">
@@ -46,7 +51,10 @@ export function AppSidebar({ user }: { user: User | undefined }) {
                 <Button
                   variant="ghost"
                   type="button"
-                  className="p-2 h-fit"
+                  className={cn(
+                    "p-2 h-fit",
+                    "hidden md:flex"
+                  )}
                   onClick={() => {
                     setOpenMobile(false);
                     setMessages([]);

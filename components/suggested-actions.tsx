@@ -122,15 +122,15 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center flex-1 gap-4 md:gap-8 p-4 md:p-0">
-      <div className="text-center max-w-2xl">
+    <div className="flex flex-col items-center justify-center flex-1 gap-4 md:gap-8 p-4 md:p-8 max-w-3xl w-full mx-auto">
+      <div className="text-center w-full">
         <h2 className="text-lg font-medium mb-2">Choose a Conversation Type</h2>
-        <p className="text-muted-foreground text-sm md:text-base">
+        <p className="text-muted-foreground text-sm md:text-base mx-auto max-w-2xl">
           Select the type of conversation you&apos;d like to have. Each option is tailored to provide specific guidance and support for your needs.
         </p>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-3 w-full max-w-3xl mx-auto">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-3 w-full">
         {conversationTypes.map((type, index) => (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -139,7 +139,7 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
           transition={{ delay: 0.05 * index }}
           key={`conversation-type-${type.title}-${index}`}
           className={cn(
-            "w-full md:w-auto",
+            "w-full",
             index > 2 ? "block md:hidden lg:block" : "block"
           )}
         >
@@ -148,7 +148,7 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
             onClick={() => handleTypeSelection(type)}
             className={cn(
               "text-center border rounded-xl flex flex-col items-center justify-center transition-colors",
-              "w-full h-[100px] p-2 gap-2 md:w-[160px] md:h-[160px] md:p-4 md:gap-4",
+              "w-full h-[100px] p-2 gap-2 md:h-[160px] md:p-4 md:gap-4",
               "hover:bg-accent/50"
             )}
           >

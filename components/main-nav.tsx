@@ -28,7 +28,7 @@ const mainNavItems = [
 export function MainNav() {
   const pathname = usePathname();
   const router = useRouter();
-  const { open } = useSidebar();
+  const { open, setOpenMobile } = useSidebar();
   const { setMessages } = useChat({ id: 'nav' });
   const [userEmail, setUserEmail] = useState<string | null>(null);
 
@@ -41,13 +41,14 @@ export function MainNav() {
     if (href === '/chat') {
       setMessages([]);
     }
+    setOpenMobile(false);
     router.push(href);
     router.refresh();
   };
 
   return (
     <div 
-      className="flex items-center justify-between h-16 px-6"
+      className="flex items-center justify-between h-16 px-6 bg-background border-b fixed top-0 left-0 right-0 z-[100]"
       data-sidebar-closed={!open}
     >
       <div className="flex items-center gap-8">

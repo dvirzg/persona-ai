@@ -19,10 +19,12 @@ export default async function MainLayout({
   return (
     <SidebarProvider defaultOpen={!isCollapsed}>
       <div className="min-h-screen">
-        <header className="fixed top-0 inset-x-0 z-50 h-16 bg-background border-b">
+        <header className="fixed top-0 inset-x-0 z-50 h-16">
           <MainNav />
         </header>
-        {children}
+        <div className="pt-16">
+          {children}
+        </div>
       </div>
     </SidebarProvider>
   );

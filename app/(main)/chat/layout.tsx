@@ -24,7 +24,9 @@ export default async function Layout({
             <AppSidebar user={session?.user} />
           </div>
           <div className="flex-1 overflow-auto">
-            {children}
+            <div className="h-full max-h-[calc(100vh-4rem)] md:max-h-none">
+              {children}
+            </div>
           </div>
         </div>
       </div>

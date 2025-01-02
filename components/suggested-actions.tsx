@@ -12,6 +12,7 @@ import {
   HeartHandshake,
   Compass
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface SuggestedActionsProps {
   chatId: string;
@@ -121,31 +122,38 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center flex-1 gap-8">
+    <div className="flex flex-col items-center justify-center flex-1 gap-4 md:gap-8 p-4 md:p-0">
       <div className="text-center max-w-2xl">
         <h2 className="text-lg font-medium mb-2">Choose a Conversation Type</h2>
-        <p className="text-muted-foreground">
+        <p className="text-muted-foreground text-sm md:text-base">
           Select the type of conversation you&apos;d like to have. Each option is tailored to provide specific guidance and support for your needs.
         </p>
       </div>
 
-      <div className="grid sm:grid-cols-3 gap-3 w-full max-w-3xl mx-auto place-items-center">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-3 w-full max-w-3xl mx-auto">
         {conversationTypes.map((type, index) => (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 20 }}
           transition={{ delay: 0.05 * index }}
-            key={`conversation-type-${type.title}-${index}`}
-            className={index > 2 ? 'hidden sm:block' : 'block'}
+          key={`conversation-type-${type.title}-${index}`}
+          className={cn(
+            "w-full md:w-auto",
+            index > 2 ? "block md:hidden lg:block" : "block"
+          )}
         >
           <Button
             variant="ghost"
-              onClick={() => handleTypeSelection(type)}
-              className="text-center border rounded-xl p-4 flex flex-col size-[160px] items-center justify-center gap-4 hover:bg-accent/50 transition-colors"
-            >
-              <type.icon size={32} className="text-muted-foreground" />
-              <span className="font-medium text-sm">{type.title}</span>
+            onClick={() => handleTypeSelection(type)}
+            className={cn(
+              "text-center border rounded-xl flex flex-col items-center justify-center transition-colors",
+              "w-full h-[100px] p-2 gap-2 md:w-[160px] md:h-[160px] md:p-4 md:gap-4",
+              "hover:bg-accent/50"
+            )}
+          >
+            <type.icon className="size-6 md:size-8 text-muted-foreground" />
+            <span className="font-medium text-xs md:text-sm text-center px-1">{type.title}</span>
           </Button>
         </motion.div>
       ))}

@@ -126,17 +126,17 @@ export default function ContextPage() {
   };
 
   return (
-    <div className="flex justify-center w-screen mt-16 pl-[100px]">
-      <div className="w-[800px] p-6 space-y-8">
+    <div className="flex justify-center w-screen mt-0 px-4 md:pl-[100px]">
+      <div className="w-full md:w-[800px] p-4 md:p-6 space-y-6 md:space-y-8">
         {/* Personal Information Section */}
-        <section>
+        <section className="mt-4">
           <h2 className="text-xl font-semibold mb-4">Personal Information</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <h3 className="text-lg mb-3">Basic Information</h3>
+            <div className="space-y-4">
+              <h3 className="text-lg mb-2">Basic Information</h3>
               <div className="space-y-3">
                 <div>
-                  <label className="text-sm text-muted-foreground">Name:</label>
+                  <label className="text-sm text-muted-foreground block mb-1">Name:</label>
                   <Input
                     value={personalInfo.name}
                     onChange={(e) => handlePersonalInfoChange('name', e.target.value)}
@@ -144,7 +144,7 @@ export default function ContextPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm text-muted-foreground">Age:</label>
+                  <label className="text-sm text-muted-foreground block mb-1">Age:</label>
                   <Input
                     value={personalInfo.age}
                     onChange={(e) => handlePersonalInfoChange('age', e.target.value)}
@@ -153,7 +153,7 @@ export default function ContextPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm text-muted-foreground">Gender:</label>
+                  <label className="text-sm text-muted-foreground block mb-1">Gender:</label>
                   <Input
                     value={personalInfo.gender}
                     onChange={(e) => handlePersonalInfoChange('gender', e.target.value)}
@@ -161,7 +161,7 @@ export default function ContextPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm text-muted-foreground">Location:</label>
+                  <label className="text-sm text-muted-foreground block mb-1">Location:</label>
                   <Input
                     value={personalInfo.location}
                     onChange={(e) => handlePersonalInfoChange('location', e.target.value)}
@@ -169,7 +169,7 @@ export default function ContextPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm text-muted-foreground">Language:</label>
+                  <label className="text-sm text-muted-foreground block mb-1">Language:</label>
                   <Input
                     value={personalInfo.language}
                     onChange={(e) => handlePersonalInfoChange('language', e.target.value)}
@@ -177,7 +177,7 @@ export default function ContextPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm text-muted-foreground">Occupation:</label>
+                  <label className="text-sm text-muted-foreground block mb-1">Occupation:</label>
                   <Input
                     value={personalInfo.occupation}
                     onChange={(e) => handlePersonalInfoChange('occupation', e.target.value)}
@@ -187,11 +187,11 @@ export default function ContextPage() {
               </div>
             </div>
 
-            <div>
-              <h3 className="text-lg mb-3">Interests & Goals</h3>
-              <div className="space-y-3">
+            <div className="space-y-4">
+              <h3 className="text-lg mb-2">Interests & Goals</h3>
+              <div className="space-y-4">
                 <div>
-                  <label className="text-sm text-muted-foreground">Interests:</label>
+                  <label className="text-sm text-muted-foreground block mb-1">Interests:</label>
                   <div className="flex gap-2 flex-wrap mb-2">
                     {interestsGoals.interests.map((interest, index) => (
                       <span key={index} className="bg-secondary px-2 py-1 rounded text-sm">
@@ -216,7 +216,7 @@ export default function ContextPage() {
                 </div>
 
                 <div>
-                  <label className="text-sm text-muted-foreground">Background:</label>
+                  <label className="text-sm text-muted-foreground block mb-1">Background:</label>
                   <Textarea
                     value={interestsGoals.background}
                     onChange={(e) => setInterestsGoals(prev => ({ ...prev, background: e.target.value }))}
@@ -226,7 +226,7 @@ export default function ContextPage() {
                 </div>
 
                 <div>
-                  <label className="text-sm text-muted-foreground">Goals:</label>
+                  <label className="text-sm text-muted-foreground block mb-1">Goals:</label>
                   <div className="flex gap-2 flex-wrap mb-2">
                     {interestsGoals.goals.map((goal, index) => (
                       <span key={index} className="bg-secondary px-2 py-1 rounded text-sm">
@@ -278,7 +278,7 @@ export default function ContextPage() {
                 }
               }}
               placeholder="Add a personality trait"
-              className="w-48"
+              className="w-full md:w-48"
             />
           </div>
         </section>
@@ -292,7 +292,7 @@ export default function ContextPage() {
               Add Person
             </Button>
           </div>
-          <div className="aspect-square max-w-2xl mx-auto bg-card rounded-xl border overflow-hidden">
+          <div className="aspect-square w-full max-w-2xl mx-auto bg-card rounded-xl border overflow-hidden">
             <SocialGraph 
               people={people} 
               onPersonClick={(person) => {

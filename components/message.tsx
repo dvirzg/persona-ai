@@ -164,7 +164,7 @@ const PurePreviewMessage = ({
                     <div
                       key={toolCallId}
                       className={cx({
-                        'animate-pulse': state === 'running',
+                        'animate-pulse': state === 'partial-call' || state === 'call',
                       })}
                     >
                       {toolName === 'getWeather' ? (

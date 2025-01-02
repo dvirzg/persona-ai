@@ -20,7 +20,7 @@ export default async function Layout({
       />
       <div className="fixed top-16 inset-x-0 bottom-0">
         <div className="flex h-full">
-          <div className="w-[260px] shrink-0 transition-all duration-300 data-[sidebar-closed=true]:w-[60px]">
+          <div className="transition-all duration-300 hidden md:block" data-sidebar-closed={isCollapsed}>
             <AppSidebar user={session?.user} />
           </div>
           <div className="flex-1 overflow-auto">

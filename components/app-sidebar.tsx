@@ -29,7 +29,7 @@ export function AppSidebar({ user }: { user: User | undefined }) {
   };
 
   return (
-    <Sidebar className="group-data-[side=left]:border-r-0 mt-16 flex flex-col h-[calc(100vh-4rem)]">
+    <Sidebar className="group-data-[side=left]:border-r mt-16 flex flex-col h-[calc(100vh-4rem)] bg-zinc-50 dark:bg-zinc-900 w-[260px] data-[state=collapsed]:w-[60px] transition-all duration-300">
       <SidebarHeader>
         <SidebarMenu>
           <div className="flex flex-row justify-between items-center">

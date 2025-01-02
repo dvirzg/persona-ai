@@ -42,6 +42,7 @@ const PurePreviewMessage = ({
   isReadonly: boolean;
 }) => {
   const [mode, setMode] = useState<'view' | 'edit'>('view');
+  const isContextPrompt = message.role === 'system';
 
   return (
     <AnimatePresence>
@@ -103,6 +104,7 @@ const PurePreviewMessage = ({
                   className={cn('flex flex-col gap-4', {
                     'bg-primary text-primary-foreground px-3 py-2 rounded-xl':
                       message.role === 'user',
+                    'bg-muted/50 px-3 py-2 rounded-xl': isContextPrompt,
                   })}
                 >
                   <Markdown>{message.content as string}</Markdown>
@@ -113,7 +115,6 @@ const PurePreviewMessage = ({
             {message.content && mode === 'edit' && (
               <div className="flex flex-row gap-2 items-start">
                 <div className="size-8" />
-
                 <MessageEditor
                   key={message.id}
                   message={message}
@@ -163,7 +164,7 @@ const PurePreviewMessage = ({
                     <div
                       key={toolCallId}
                       className={cx({
-                        skeleton: ['getWeather'].includes(toolName),
+                        'animate-pulse': state === 'running',
                       })}
                     >
                       {toolName === 'getWeather' ? (
@@ -189,7 +190,7 @@ const PurePreviewMessage = ({
               </div>
             )}
 
-            {!isReadonly && (
+            {!isReadonly && !isContextPrompt && (
               <MessageActions
                 key={`action-${message.id}`}
                 chatId={chatId}

@@ -2,7 +2,7 @@
 
 import { updateChatVisibility } from '@/app/(main)/chat/actions';
 import { VisibilityType } from '@/components/visibility-selector';
-import { Chat } from '@/lib/db/schema';
+import { Chat } from '@/lib/db/types';
 import { useMemo } from 'react';
 import useSWR, { useSWRConfig } from 'swr';
 
@@ -14,7 +14,7 @@ export function useChatVisibility({
   initialVisibility: VisibilityType;
 }) {
   const { mutate, cache } = useSWRConfig();
-  const history: Array<Chat> = cache.get('/api/history')?.data;
+  const history: Array<Chat> = cache.get('/chat/api/history')?.data;
 
   const { data: localVisibility, mutate: setLocalVisibility } = useSWR(
     `${chatId}-visibility`,
@@ -35,7 +35,7 @@ export function useChatVisibility({
     setLocalVisibility(updatedVisibilityType);
 
     mutate<Array<Chat>>(
-      '/api/history',
+      '/chat/api/history',
       (history) => {
         return history
           ? history.map((chat) => {

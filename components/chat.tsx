@@ -6,7 +6,7 @@ import { useState } from 'react';
 import useSWR, { useSWRConfig } from 'swr';
 
 import { ChatHeader } from '@/components/chat-header';
-import type { Vote } from '@/lib/db/schema';
+import type { Vote } from '@/lib/db/types';
 import { fetcher } from '@/lib/utils';
 
 import { Block } from './block';
@@ -42,16 +42,17 @@ export function Chat({
     reload,
   } = useChat({
     id,
+    api: '/chat/api/chat',
     body: { id, modelId: selectedModelId },
     initialMessages,
     experimental_throttle: 100,
     onFinish: () => {
-      mutate('/api/history');
+      mutate('/chat/api/history');
     },
   });
 
   const { data: votes } = useSWR<Array<Vote>>(
-    `/api/vote?chatId=${id}`,
+    `/chat/api/vote?chatId=${id}`,
     fetcher,
   );
 

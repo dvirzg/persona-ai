@@ -1,16 +1,31 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-export function middleware(req: NextRequest) {
-  const isAuthenticated = req.cookies.get('user_email');
+export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
 
-  if (!isAuthenticated && req.nextUrl.pathname !== '/login') {
-    return NextResponse.redirect(new URL('/login', req.url));
+  // Redirect API requests to their new locations
+  if (pathname === '/api/chat') {
+    const url = request.nextUrl.clone();
+    url.pathname = '/chat/api/chat';
+    return NextResponse.rewrite(url);
+  }
+
+  if (pathname === '/api/history') {
+    const url = request.nextUrl.clone();
+    url.pathname = '/chat/api/history';
+    return NextResponse.rewrite(url);
+  }
+
+  if (pathname.startsWith('/api/vote')) {
+    const url = request.nextUrl.clone();
+    url.pathname = `/chat/api${pathname.slice(4)}`;
+    return NextResponse.rewrite(url);
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/', '/chat/:path*', '/api/:path*'],
+  matcher: ['/api/:path*'],
 };

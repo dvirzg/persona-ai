@@ -15,7 +15,7 @@ export async function GET(request: Request) {
     return new Response('Unauthorized', { status: 401 });
   }
 
-  const votes = await getVotesByChatId({ id: chatId });
+  const votes = await getVotesByChatId(chatId);
 
   return Response.json(votes, { status: 200 });
 }
@@ -41,8 +41,8 @@ export async function PATCH(request: Request) {
   await voteMessage({
     chatId,
     messageId,
-    type: type,
+    type,
   });
 
-  return new Response('Message voted', { status: 200 });
+  return new Response('Vote updated', { status: 200 });
 }

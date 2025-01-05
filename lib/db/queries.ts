@@ -104,8 +104,9 @@ export async function getMessageById(id: string) {
     const { rows } = await sql`
       SELECT * FROM messages
       WHERE id = ${id}
+      LIMIT 1
     `;
-    return rows[0];
+    return rows[0] || null;
   } catch (error) {
     console.error('Failed to get message by id', error);
     throw error;

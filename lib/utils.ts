@@ -1,23 +1,30 @@
 import type {
+  Message as AIMessage,
   CoreAssistantMessage,
   CoreMessage,
   CoreToolMessage,
-  Message,
   ToolInvocation,
 } from 'ai';
-// @ts-ignore
-import clsx from 'clsx';
+import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
-import type { DbMessage } from '@/lib/db/types';
+import type { Message as DbMessage } from '@/lib/db/types';
 
-export function cn(...inputs: any[]) {
-  return twMerge(clsx(inputs));
+interface MessageContent {
+  type: string;
+  text?: string;
+  toolCallId?: string;
+  toolName?: string;
+  args?: Record<string, any>;
 }
 
 interface ApplicationError extends Error {
   info: string;
   status: number;
+}
+
+export function cn(...inputs: unknown[]) {
+  return twMerge(clsx(inputs));
 }
 
 export const fetcher = async (url: string) => {
@@ -52,102 +59,58 @@ export function generateUUID(): string {
   });
 }
 
-function addToolMessageToChat({
-  toolMessage,
-  messages,
-}: {
-  toolMessage: CoreToolMessage;
-  messages: Array<Message>;
-}): Array<Message> {
-  return messages.map((message) => {
-    if (message.toolInvocations) {
-      return {
-        ...message,
-        toolInvocations: message.toolInvocations.map((toolInvocation) => {
-          const toolResult = toolMessage.content.find(
-            (tool) => tool.toolCallId === toolInvocation.toolCallId,
-          );
-
-          if (toolResult) {
-            return {
-              ...toolInvocation,
-              state: 'result',
-              result: toolResult.result,
-            };
-          }
-
-          return toolInvocation;
-        }),
-      };
-    }
-
-    return message;
-  });
-}
-
-interface MessageContent {
-  text?: string;
-  type?: string;
-  toolCallId?: string;
-  toolName?: string;
-  args?: any;
-}
-
 export function convertToUIMessages(
   messages: Array<DbMessage>,
-): Array<Message> {
-  return messages.reduce((chatMessages: Array<Message>, message) => {
-    if (message.role === 'tool') {
-      const toolMessage = {
-        ...message,
-        content: typeof message.content === 'string' ? JSON.parse(message.content) : message.content,
-      } as unknown as CoreToolMessage;
-      
-      return addToolMessageToChat({
-        toolMessage,
-        messages: chatMessages,
-      });
-    }
-
-    let textContent = '';
-    const toolInvocations: Array<ToolInvocation> = [];
-
+): Array<AIMessage> {
+  return messages.reduce((chatMessages: Array<AIMessage>, message) => {
     try {
-      const content = typeof message.content === 'string' ? JSON.parse(message.content) : message.content;
-      if (content && typeof content === 'object') {
-        const parsedContent = content as MessageContent | MessageContent[];
-        if (!Array.isArray(parsedContent) && 'text' in parsedContent) {
-          textContent = parsedContent.text || '';
-        } else if (Array.isArray(parsedContent)) {
-          for (const item of parsedContent) {
-            if (item && typeof item === 'object' && 'type' in item) {
-              if (item.type === 'text' && 'text' in item) {
-                textContent += item.text || '';
-              } else if (item.type === 'tool-call' && 'toolCallId' in item && 'toolName' in item && 'args' in item) {
-                toolInvocations.push({
-                  state: 'call',
-                  toolCallId: item.toolCallId || '',
-                  toolName: item.toolName || '',
-                  args: item.args || {},
-                });
-              }
-            }
-          }
-        }
-      }
-    } catch (error) {
-      console.error('Failed to parse message content:', error);
+      const content = JSON.parse(message.content as string);
+      return [
+        ...chatMessages,
+        {
+          id: message.id,
+          role: message.role as AIMessage['role'],
+          content: content.text ?? content,
+          createdAt: new Date(message.createdAt),
+        },
+      ];
+    } catch {
+      return [
+        ...chatMessages,
+        {
+          id: message.id,
+          role: message.role as AIMessage['role'],
+          content: message.content,
+          createdAt: new Date(message.createdAt),
+        },
+      ];
     }
-
-    chatMessages.push({
-      id: message.id,
-      role: message.role as Message['role'],
-      content: textContent,
-      toolInvocations,
-    });
-
-    return chatMessages;
   }, []);
+}
+
+export function getMostRecentUserMessage(messages: Array<CoreMessage>) {
+  const userMessages = messages.filter((message) => message.role === 'user');
+  return userMessages.at(-1);
+}
+
+export function getDocumentTimestampByIndex(
+  documents: Array<any>,
+  index: number,
+) {
+  if (!documents) return new Date();
+  if (index > documents.length) return new Date();
+
+  return documents[index].createdAt;
+}
+
+export function getMessageIdFromAnnotations(message: AIMessage) {
+  if (!message.annotations) return message.id;
+
+  const [annotation] = message.annotations;
+  if (!annotation) return message.id;
+
+  // @ts-expect-error messageIdFromServer is not defined in MessageAnnotation
+  return annotation.messageIdFromServer;
 }
 
 export function sanitizeResponseMessages(
@@ -189,7 +152,7 @@ export function sanitizeResponseMessages(
   );
 }
 
-export function sanitizeUIMessages(messages: Array<Message>): Array<Message> {
+export function sanitizeUIMessages(messages: Array<AIMessage>): Array<AIMessage> {
   const messagesBySanitizedToolInvocations = messages.map((message) => {
     if (message.role !== 'assistant') return message;
 
@@ -220,29 +183,4 @@ export function sanitizeUIMessages(messages: Array<Message>): Array<Message> {
       message.content.length > 0 ||
       (message.toolInvocations && message.toolInvocations.length > 0),
   );
-}
-
-export function getMostRecentUserMessage(messages: Array<CoreMessage>) {
-  const userMessages = messages.filter((message) => message.role === 'user');
-  return userMessages.at(-1);
-}
-
-export function getDocumentTimestampByIndex(
-  documents: Array<any>,
-  index: number,
-) {
-  if (!documents) return new Date();
-  if (index > documents.length) return new Date();
-
-  return documents[index].createdAt;
-}
-
-export function getMessageIdFromAnnotations(message: Message) {
-  if (!message.annotations) return message.id;
-
-  const [annotation] = message.annotations;
-  if (!annotation) return message.id;
-
-  // @ts-expect-error messageIdFromServer is not defined in MessageAnnotation
-  return annotation.messageIdFromServer;
 }

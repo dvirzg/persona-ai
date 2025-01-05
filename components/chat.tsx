@@ -1,12 +1,12 @@
 'use client';
 
-import type { Message, ChatRequestOptions } from 'ai';
+import type { Attachment, Message, ChatRequestOptions } from 'ai';
 import { useChat } from 'ai/react';
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import useSWR, { useSWRConfig } from 'swr';
 
 import { ChatHeader } from '@/components/chat-header';
-import type { Vote, Attachment } from '@/lib/db/types';
+import type { Vote } from '@/lib/db/types';
 import { fetcher } from '@/lib/utils';
 
 import { Block } from './block';

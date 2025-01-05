@@ -1,5 +1,5 @@
 import { sql } from '@vercel/postgres';
-import type { Chat, DbMessage, Vote } from './types';
+import type { Chat, Message, Vote } from './types';
 
 export async function getChatsByUserId(userId: string): Promise<Chat[]> {
   try {
@@ -55,9 +55,9 @@ export async function saveMessages({ messages }: { messages: Array<{ id: string;
   }
 }
 
-export async function getMessagesByChatId(id: string): Promise<DbMessage[]> {
+export async function getMessagesByChatId(id: string): Promise<Message[]> {
   try {
-    const { rows } = await sql<DbMessage>`
+    const { rows } = await sql<Message>`
       SELECT * FROM messages 
       WHERE "chatId" = ${id}
       ORDER BY "createdAt" ASC

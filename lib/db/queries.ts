@@ -139,8 +139,18 @@ export async function getDocumentsById({ id }: { id: string }) {
   }
 }
 
-export async function saveDocument({ userId, title, content, kind = 'text' }: { userId: string; title: string; content: string; kind?: string }) {
+export async function saveDocument({ userId, title, content, kind = 'text', id }: { userId: string; title: string; content: string; kind?: string; id?: string }) {
   try {
+    if (id) {
+      const { rows } = await sql`
+        UPDATE documents 
+        SET title = ${title}, content = ${content}, kind = ${kind}
+        WHERE id = ${id} AND user_id = ${userId}
+        RETURNING *
+      `;
+      return rows[0];
+    }
+
     const { rows } = await sql`
       INSERT INTO documents (user_id, title, content, kind)
       VALUES (${userId}, ${title}, ${content}, ${kind})
@@ -166,7 +176,7 @@ export async function deleteDocumentsByIdAfterTimestamp({ id, timestamp }: { id:
   }
 }
 
-export async function getSuggestionsByDocumentId(documentId: string) {
+export async function getSuggestionsByDocumentId({ documentId }: { documentId: string }) {
   try {
     const { rows } = await sql`
       SELECT * FROM suggestions

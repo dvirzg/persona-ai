@@ -1,27 +1,66 @@
-export interface DbMessage {
+import { VisibilityType } from '@/components/visibility-selector';
+
+export interface User {
   id: string;
-  chatId: string;
-  role: string;
-  content: string;
+  email: string;
+  password: string;
   createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface Chat {
   id: string;
   userId: string;
   title: string;
-  visibility: 'public' | 'private';
+  visibility: VisibilityType;
   createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Message {
+  id: string;
+  chatId: string;
+  content: string;
+  role: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface Vote {
-  chatId: string;
+  id: string;
   messageId: string;
-  isUpvoted: boolean;
+  userId: string;
+  value: number;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-export interface Attachment {
-  url: string;
-  name: string;
-  contentType: string;
+export interface Document {
+  id: string;
+  userId: string;
+  title: string;
+  content: string;
+  kind: string;
+  createdAt: Date;
+  updatedAt?: Date;
+}
+
+export interface Suggestion {
+  id: string;
+  documentId: string;
+  content: string;
+  originalText: string;
+  suggestedText: string;
+  description: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface PasswordResetToken {
+  id: string;
+  userId: string;
+  token: string;
+  expiresAt: Date;
+  createdAt: Date;
+  updatedAt: Date;
 } 

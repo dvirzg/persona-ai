@@ -36,7 +36,7 @@ export async function POST(request: Request) {
     console.log('Generated reset token');
     
     try {
-      await createPasswordResetToken(users[0].id, token);
+      await createPasswordResetToken({ userId: users[0].id, token });
       console.log('Saved reset token to database');
     } catch (error) {
       console.error('Error saving reset token:', error);

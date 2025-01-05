@@ -1,9 +1,10 @@
 'use client';
 
 import { useChat } from 'ai/react';
+import { useRouter } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 import { BlockKind } from './block';
-import { Suggestion } from '@/lib/db/schema';
+import { Suggestion } from '@/lib/db/types';
 import { initialBlockData, useBlock } from '@/hooks/use-block';
 import { useUserMessageId } from '@/hooks/use-user-message-id';
 import { cx } from 'class-variance-authority';

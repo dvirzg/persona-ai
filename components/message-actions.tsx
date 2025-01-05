@@ -2,6 +2,7 @@ import type { Message } from 'ai';
 import { toast } from 'sonner';
 import { useSWRConfig } from 'swr';
 import { useCopyToClipboard } from 'usehooks-ts';
+import { useRouter } from 'next/navigation';
 
 import type { Vote } from '@/lib/db/types';
 import { getMessageIdFromAnnotations } from '@/lib/utils';
@@ -30,6 +31,7 @@ export function PureMessageActions({
 }) {
   const { mutate } = useSWRConfig();
   const [_, copyToClipboard] = useCopyToClipboard();
+  const router = useRouter();
 
   if (isLoading) return null;
   if (message.role === 'user') return null;
@@ -59,48 +61,22 @@ export function PureMessageActions({
           <TooltipTrigger asChild>
             <Button
               className="py-1 px-2 h-fit text-muted-foreground !pointer-events-auto"
-              disabled={vote?.isUpvoted}
+              disabled={vote?.value === 1}
               variant="outline"
               onClick={async () => {
                 const messageId = getMessageIdFromAnnotations(message);
+                if (!messageId) return;
 
-                const upvote = fetch('/chat/api/vote', {
-                  method: 'PATCH',
+                await fetch(`/chat/api/vote`, {
+                  method: 'POST',
                   body: JSON.stringify({
                     chatId,
                     messageId,
-                    type: 'up',
+                    value: 1,
                   }),
                 });
 
-                toast.promise(upvote, {
-                  loading: 'Upvoting Response...',
-                  success: () => {
-                    mutate<Array<Vote>>(
-                      `/chat/api/vote?chatId=${chatId}`,
-                      (currentVotes) => {
-                        if (!currentVotes) return [];
-
-                        const votesWithoutCurrent = currentVotes.filter(
-                          (vote) => vote.messageId !== message.id,
-                        );
-
-                        return [
-                          ...votesWithoutCurrent,
-                          {
-                            chatId,
-                            messageId: message.id,
-                            isUpvoted: true,
-                          },
-                        ];
-                      },
-                      { revalidate: false },
-                    );
-
-                    return 'Upvoted Response!';
-                  },
-                  error: 'Failed to upvote response.',
-                });
+                router.refresh();
               }}
             >
               <ThumbUpIcon />
@@ -114,47 +90,21 @@ export function PureMessageActions({
             <Button
               className="py-1 px-2 h-fit text-muted-foreground !pointer-events-auto"
               variant="outline"
-              disabled={vote && !vote.isUpvoted}
+              disabled={vote && vote.value === -1}
               onClick={async () => {
                 const messageId = getMessageIdFromAnnotations(message);
+                if (!messageId) return;
 
-                const downvote = fetch('/chat/api/vote', {
-                  method: 'PATCH',
+                await fetch(`/chat/api/vote`, {
+                  method: 'POST',
                   body: JSON.stringify({
                     chatId,
                     messageId,
-                    type: 'down',
+                    value: -1,
                   }),
                 });
 
-                toast.promise(downvote, {
-                  loading: 'Downvoting Response...',
-                  success: () => {
-                    mutate<Array<Vote>>(
-                      `/chat/api/vote?chatId=${chatId}`,
-                      (currentVotes) => {
-                        if (!currentVotes) return [];
-
-                        const votesWithoutCurrent = currentVotes.filter(
-                          (vote) => vote.messageId !== message.id,
-                        );
-
-                        return [
-                          ...votesWithoutCurrent,
-                          {
-                            chatId,
-                            messageId: message.id,
-                            isUpvoted: false,
-                          },
-                        ];
-                      },
-                      { revalidate: false },
-                    );
-
-                    return 'Downvoted Response!';
-                  },
-                  error: 'Failed to downvote response.',
-                });
+                router.refresh();
               }}
             >
               <ThumbDownIcon />

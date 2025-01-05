@@ -1,23 +1,13 @@
-import type {
-  Attachment,
-  ChatRequestOptions,
-  CreateMessage,
-  Message,
-} from 'ai';
+import { useCallback, useEffect, useMemo, useRef, useState, memo, type Dispatch, type SetStateAction } from 'react';
+import type { Attachment, ChatRequestOptions, CreateMessage, Message } from 'ai';
+import { useChat } from 'ai/react';
+import { useRouter } from 'next/navigation';
 import { formatDistance } from 'date-fns';
 import { AnimatePresence, motion } from 'framer-motion';
-import {
-  type Dispatch,
-  memo,
-  type SetStateAction,
-  useCallback,
-  useEffect,
-  useState,
-} from 'react';
 import useSWR, { useSWRConfig } from 'swr';
 import { useDebounceCallback, useWindowSize } from 'usehooks-ts';
 
-import type { Document, Suggestion, Vote } from '@/lib/db/schema';
+import type { Document, Suggestion, Vote } from '@/lib/db/types';
 import { cn, fetcher } from '@/lib/utils';
 
 import { DiffView } from './diffview';

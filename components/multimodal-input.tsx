@@ -111,9 +111,8 @@ function PureMultimodalInput({
 
   const submitForm = useCallback(() => {
     window.history.replaceState({}, '', `/chat/${chatId}`);
-
-    handleSubmit(undefined, {
-      experimental_attachments: attachments,
+    handleSubmit({
+      preventDefault: () => {},
     });
 
     setAttachments([]);
@@ -123,7 +122,6 @@ function PureMultimodalInput({
       textareaRef.current?.focus();
     }
   }, [
-    attachments,
     handleSubmit,
     setAttachments,
     setLocalStorageInput,

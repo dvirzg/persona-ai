@@ -1,8 +1,9 @@
 import { sql } from '@vercel/postgres';
+import type { Chat, DbMessage, Vote } from './types';
 
-export async function getChatsByUserId(userId: string) {
+export async function getChatsByUserId(userId: string): Promise<Chat[]> {
   try {
-    const { rows } = await sql`
+    const { rows } = await sql<Chat>`
       SELECT * FROM chats 
       WHERE "userId" = ${userId}
       ORDER BY "createdAt" DESC
@@ -14,20 +15,20 @@ export async function getChatsByUserId(userId: string) {
   }
 }
 
-export async function getChatById(id: string) {
+export async function getChatById(id: string): Promise<Chat | null> {
   try {
-    const { rows } = await sql`
+    const { rows } = await sql<Chat>`
       SELECT * FROM chats 
       WHERE id = ${id}
     `;
-    return rows[0];
+    return rows[0] || null;
   } catch (error) {
     console.error('Failed to get chat by id from database', error);
     throw error;
   }
 }
 
-export async function saveChat({ id, userId, title }: { id: string; userId: string; title: string }) {
+export async function saveChat({ id, userId, title }: { id: string; userId: string; title: string }): Promise<void> {
   try {
     await sql`
       INSERT INTO chats (id, "userId", title, "createdAt")
@@ -39,12 +40,13 @@ export async function saveChat({ id, userId, title }: { id: string; userId: stri
   }
 }
 
-export async function saveMessages({ messages }: { messages: Array<{ id: string; chatId: string; role: string; content: any; createdAt: Date }> }) {
+export async function saveMessages({ messages }: { messages: Array<{ id: string; chatId: string; role: string; content: any; createdAt: Date }> }): Promise<void> {
   try {
     for (const message of messages) {
+      const jsonContent = typeof message.content === 'string' ? JSON.stringify({ text: message.content }) : JSON.stringify(message.content);
       await sql`
         INSERT INTO messages (id, "chatId", role, content, "createdAt")
-        VALUES (${message.id}, ${message.chatId}, ${message.role}, ${message.content}, ${message.createdAt.toISOString()})
+        VALUES (${message.id}, ${message.chatId}, ${message.role}, ${jsonContent}::jsonb, ${message.createdAt.toISOString()})
       `;
     }
   } catch (error) {
@@ -53,9 +55,9 @@ export async function saveMessages({ messages }: { messages: Array<{ id: string;
   }
 }
 
-export async function getMessagesByChatId(id: string) {
+export async function getMessagesByChatId(id: string): Promise<DbMessage[]> {
   try {
-    const { rows } = await sql`
+    const { rows } = await sql<DbMessage>`
       SELECT * FROM messages 
       WHERE "chatId" = ${id}
       ORDER BY "createdAt" ASC
@@ -67,9 +69,9 @@ export async function getMessagesByChatId(id: string) {
   }
 }
 
-export async function getVotesByChatId(chatId: string) {
+export async function getVotesByChatId(chatId: string): Promise<Vote[]> {
   try {
-    const { rows } = await sql`
+    const { rows } = await sql<Vote>`
       SELECT * FROM votes 
       WHERE "chatId" = ${chatId}
     `;
@@ -80,10 +82,10 @@ export async function getVotesByChatId(chatId: string) {
   }
 }
 
-export async function voteMessage({ chatId, messageId, type }: { chatId: string; messageId: string; type: 'up' | 'down' }) {
+export async function voteMessage({ chatId, messageId, type }: { chatId: string; messageId: string; type: 'up' | 'down' }): Promise<Vote> {
   try {
     const isUpvoted = type === 'up';
-    const { rows } = await sql`
+    const { rows } = await sql<Vote>`
       INSERT INTO votes ("chatId", "messageId", "isUpvoted")
       VALUES (${chatId}, ${messageId}, ${isUpvoted})
       ON CONFLICT ("chatId", "messageId") 
@@ -97,7 +99,7 @@ export async function voteMessage({ chatId, messageId, type }: { chatId: string;
   }
 }
 
-export async function deleteChatById(id: string) {
+export async function deleteChatById(id: string): Promise<void> {
   try {
     await sql`
       DELETE FROM chats 
@@ -109,7 +111,7 @@ export async function deleteChatById(id: string) {
   }
 }
 
-export async function updateChatVisiblityById({ chatId, visibility }: { chatId: string; visibility: string }) {
+export async function updateChatVisiblityById({ chatId, visibility }: { chatId: string; visibility: string }): Promise<void> {
   try {
     await sql`
       UPDATE chats 

@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Button } from './ui/button';
 import { ChatRequestOptions, CreateMessage, Message } from 'ai';
 import { memo } from 'react';
+import { useRouter } from 'next/navigation';
 import { 
   Heart, 
   Briefcase, 
@@ -30,6 +31,8 @@ interface ConversationType {
 }
 
 function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
+  const router = useRouter();
+  
   const conversationTypes: ConversationType[] = [
     {
       title: 'Self-Discovery',
@@ -106,19 +109,33 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
   ];
 
   const handleTypeSelection = async (type: ConversationType) => {
-    window.history.replaceState({}, '', `/chat/${chatId}`);
-    
-    // First append the system message to set the context
-    await append({
-      role: 'system',
-      content: type.systemPrompt,
-    });
+    try {
+      // Store messages in memory to be handled by the chat page
+      const messages = [
+        {
+          role: 'system' as const,
+          content: type.systemPrompt,
+        },
+        {
+          role: 'assistant' as const,
+          content: type.initialMessages[0],
+        }
+      ];
+      
+      // Save messages to session storage
+      sessionStorage.setItem(`chat-${chatId}-messages`, JSON.stringify(messages));
 
-    // Then append the first initial message as if it came from the assistant
-    await append({
-      role: 'assistant',
-      content: type.initialMessages[0],
-    });
+      // Create the chat by sending the first message
+      await append(messages[0]);
+      await append(messages[1]);
+
+      // Navigate to the chat page after messages are saved
+      const chatUrl = `/chat/chat/${chatId}`;
+      window.location.href = chatUrl;
+    } catch (error) {
+      console.error('Failed to handle type selection:', error);
+      window.location.href = `/chat/chat/${chatId}`;
+    }
   };
 
   return (

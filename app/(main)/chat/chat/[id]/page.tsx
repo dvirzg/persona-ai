@@ -1,54 +1,54 @@
-import { cookies } from 'next/headers';
+'use client';
+
 import { notFound } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
-import { auth } from '@/app/(auth)/auth';
 import { Chat } from '@/components/chat';
-import { DEFAULT_MODEL_NAME, models } from '@/lib/ai/models';
-import { getChatById, getMessagesByChatId } from '@/lib/db/queries';
+import { DEFAULT_MODEL_NAME } from '@/lib/ai/models';
 import { convertToUIMessages } from '@/lib/utils';
-import { DataStreamHandler } from '@/components/data-stream-handler';
+import type { Message } from 'ai';
 
-export default async function Page(props: { params: Promise<{ id: string }> }) {
-  const params = await props.params;
-  const { id } = params;
-  const chat = await getChatById({ id });
-
-  if (!chat) {
-    notFound();
-  }
-
-  const session = await auth();
-
-  if (chat.visibility === 'private') {
-    if (!session || !session.user) {
-      return notFound();
+export default function Page(props: { params: { id: string } }) {
+  const { id } = props.params;
+  const [initialMessages, setInitialMessages] = useState<Message[]>([]);
+  
+  useEffect(() => {
+    // Check for stored messages
+    const storedMessages = sessionStorage.getItem(`chat-${id}-messages`);
+    if (storedMessages) {
+      setInitialMessages(JSON.parse(storedMessages));
+      sessionStorage.removeItem(`chat-${id}-messages`);
+      return;
     }
 
-    if (session.user.id !== chat.userId) {
-      return notFound();
-    }
-  }
+    // If no stored messages, fetch from API
+    const fetchMessages = async () => {
+      try {
+        const response = await fetch(`/api/chat/messages?chatId=${id}`);
+        if (!response.ok) {
+          if (response.status === 404) {
+            notFound();
+          }
+          throw new Error('Failed to fetch messages');
+        }
+        const messages = await response.json();
+        setInitialMessages(convertToUIMessages(messages));
+      } catch (error) {
+        console.error('Failed to fetch messages:', error);
+        notFound();
+      }
+    };
 
-  const messagesFromDb = await getMessagesByChatId({
-    id,
-  });
-
-  const cookieStore = await cookies();
-  const modelIdFromCookie = cookieStore.get('model-id')?.value;
-  const selectedModelId =
-    models.find((model) => model.id === modelIdFromCookie)?.id ||
-    DEFAULT_MODEL_NAME;
+    fetchMessages();
+  }, [id]);
 
   return (
-    <>
-      <Chat
-        id={chat.id}
-        initialMessages={convertToUIMessages(messagesFromDb)}
-        selectedModelId={selectedModelId}
-        selectedVisibilityType={chat.visibility}
-        isReadonly={session?.user?.id !== chat.userId}
-      />
-      <DataStreamHandler id={id} />
-    </>
+    <Chat
+      id={id}
+      initialMessages={initialMessages}
+      selectedModelId={DEFAULT_MODEL_NAME}
+      selectedVisibilityType="private"
+      isReadonly={false}
+    />
   );
 }

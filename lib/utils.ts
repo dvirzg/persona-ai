@@ -5,12 +5,13 @@ import type {
   Message,
   ToolInvocation,
 } from 'ai';
-import { type ClassValue, clsx } from 'clsx';
+// @ts-ignore
+import clsx from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
-import type { Message as DBMessage, Document } from '@/lib/db/schema';
+import type { DbMessage } from '@/lib/db/types';
 
-export function cn(...inputs: ClassValue[]) {
+export function cn(...inputs: any[]) {
   return twMerge(clsx(inputs));
 }
 
@@ -84,13 +85,26 @@ function addToolMessageToChat({
   });
 }
 
+interface MessageContent {
+  text?: string;
+  type?: string;
+  toolCallId?: string;
+  toolName?: string;
+  args?: any;
+}
+
 export function convertToUIMessages(
-  messages: Array<DBMessage>,
+  messages: Array<DbMessage>,
 ): Array<Message> {
   return messages.reduce((chatMessages: Array<Message>, message) => {
     if (message.role === 'tool') {
+      const toolMessage = {
+        ...message,
+        content: typeof message.content === 'string' ? JSON.parse(message.content) : message.content,
+      } as unknown as CoreToolMessage;
+      
       return addToolMessageToChat({
-        toolMessage: message as CoreToolMessage,
+        toolMessage,
         messages: chatMessages,
       });
     }
@@ -98,21 +112,31 @@ export function convertToUIMessages(
     let textContent = '';
     const toolInvocations: Array<ToolInvocation> = [];
 
-    if (typeof message.content === 'string') {
-      textContent = message.content;
-    } else if (Array.isArray(message.content)) {
-      for (const content of message.content) {
-        if (content.type === 'text') {
-          textContent += content.text;
-        } else if (content.type === 'tool-call') {
-          toolInvocations.push({
-            state: 'call',
-            toolCallId: content.toolCallId,
-            toolName: content.toolName,
-            args: content.args,
-          });
+    try {
+      const content = typeof message.content === 'string' ? JSON.parse(message.content) : message.content;
+      if (content && typeof content === 'object') {
+        const parsedContent = content as MessageContent | MessageContent[];
+        if (!Array.isArray(parsedContent) && 'text' in parsedContent) {
+          textContent = parsedContent.text || '';
+        } else if (Array.isArray(parsedContent)) {
+          for (const item of parsedContent) {
+            if (item && typeof item === 'object' && 'type' in item) {
+              if (item.type === 'text' && 'text' in item) {
+                textContent += item.text || '';
+              } else if (item.type === 'tool-call' && 'toolCallId' in item && 'toolName' in item && 'args' in item) {
+                toolInvocations.push({
+                  state: 'call',
+                  toolCallId: item.toolCallId || '',
+                  toolName: item.toolName || '',
+                  args: item.args || {},
+                });
+              }
+            }
+          }
         }
       }
+    } catch (error) {
+      console.error('Failed to parse message content:', error);
     }
 
     chatMessages.push({
@@ -204,7 +228,7 @@ export function getMostRecentUserMessage(messages: Array<CoreMessage>) {
 }
 
 export function getDocumentTimestampByIndex(
-  documents: Array<Document>,
+  documents: Array<any>,
   index: number,
 ) {
   if (!documents) return new Date();

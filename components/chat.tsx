@@ -1,12 +1,12 @@
 'use client';
 
-import type { Attachment, Message } from 'ai';
+import type { Message, ChatRequestOptions } from 'ai';
 import { useChat } from 'ai/react';
 import { useState } from 'react';
 import useSWR, { useSWRConfig } from 'swr';
 
 import { ChatHeader } from '@/components/chat-header';
-import type { Vote } from '@/lib/db/types';
+import type { Vote, Attachment } from '@/lib/db/types';
 import { fetcher } from '@/lib/utils';
 
 import { Block } from './block';
@@ -29,13 +29,14 @@ export function Chat({
   isReadonly: boolean;
 }) {
   const { mutate } = useSWRConfig();
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
 
   const {
     messages,
     setMessages,
-    handleSubmit,
     input,
     setInput,
+    handleSubmit: originalHandleSubmit,
     append,
     isLoading,
     stop,
@@ -45,19 +46,38 @@ export function Chat({
     api: '/chat/api/chat',
     body: { id, modelId: selectedModelId },
     initialMessages,
-    experimental_throttle: 100,
     onFinish: () => {
       mutate('/chat/api/history');
     },
   });
 
   const { data: votes } = useSWR<Array<Vote>>(
-    `/chat/api/vote?chatId=${id}`,
+    messages.length > 0 && !isLoading ? `/chat/api/vote?chatId=${id}` : null,
     fetcher,
   );
 
-  const [attachments, setAttachments] = useState<Array<Attachment>>([]);
   const isBlockVisible = useBlockSelector((state) => state.isVisible);
+
+  // Wrap handleSubmit to handle the event properly
+  const handleSubmit = (
+    event?: { preventDefault?: () => void },
+    chatRequestOptions?: ChatRequestOptions,
+  ) => {
+    if (event?.preventDefault) {
+      event.preventDefault();
+    }
+    
+    if (!input.trim()) {
+      return;
+    }
+
+    append({
+      role: 'user',
+      content: input,
+    }, chatRequestOptions);
+
+    setInput('');
+  };
 
   return (
     <>
@@ -69,19 +89,24 @@ export function Chat({
           isReadonly={isReadonly}
         />
 
-        <Messages
-          chatId={id}
-          isLoading={isLoading}
-          votes={votes}
-          messages={messages}
-          setMessages={setMessages}
-          reload={reload}
-          isReadonly={isReadonly}
-          isBlockVisible={isBlockVisible}
-          append={append}
-        />
+        <div className="flex-1 overflow-y-auto">
+          <Messages
+            chatId={id}
+            isLoading={isLoading}
+            votes={votes}
+            messages={messages}
+            setMessages={setMessages as any}
+            reload={reload}
+            isReadonly={isReadonly}
+            isBlockVisible={isBlockVisible}
+            append={append}
+          />
+        </div>
 
-        <form className="flex mx-auto px-4 bg-background pb-4 md:pb-6 gap-2 w-full md:max-w-3xl">
+        <form 
+          className="flex mx-auto px-4 bg-background pb-4 md:pb-6 gap-2 w-full md:max-w-3xl"
+          onSubmit={(e) => handleSubmit(e)}
+        >
           {!isReadonly && (
             <MultimodalInput
               chatId={id}
@@ -93,7 +118,7 @@ export function Chat({
               attachments={attachments}
               setAttachments={setAttachments}
               messages={messages}
-              setMessages={setMessages}
+              setMessages={setMessages as any}
               append={append}
             />
           )}
@@ -111,7 +136,7 @@ export function Chat({
         setAttachments={setAttachments}
         append={append}
         messages={messages}
-        setMessages={setMessages}
+        setMessages={setMessages as any}
         reload={reload}
         votes={votes}
         isReadonly={isReadonly}

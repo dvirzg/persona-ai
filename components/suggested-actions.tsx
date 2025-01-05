@@ -110,7 +110,7 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
 
   const handleTypeSelection = async (type: ConversationType) => {
     try {
-      // Store messages in memory to be handled by the chat page
+      // Create the messages
       const messages = [
         {
           role: 'system' as const,
@@ -122,24 +122,20 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
         }
       ];
       
-      // Save messages to session storage
-      sessionStorage.setItem(`chat-${chatId}-messages`, JSON.stringify(messages));
-
-      // Create the chat by sending the first message
+      // First append the messages to create the chat
       await append(messages[0]);
       await append(messages[1]);
 
-      // Navigate to the chat page after messages are saved
-      const chatUrl = `/chat/chat/${chatId}`;
-      window.location.href = chatUrl;
+      // Then navigate to the chat page
+      router.push(`/chat/${chatId}`);
     } catch (error) {
       console.error('Failed to handle type selection:', error);
-      window.location.href = `/chat/chat/${chatId}`;
+      router.push(`/chat/${chatId}`);
     }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center flex-1 gap-4 md:gap-8 p-4 md:p-8 max-w-3xl w-full mx-auto">
+    <div className="h-[calc(100vh-8rem)] flex flex-col items-center justify-center gap-4 md:gap-8 p-4 md:p-8 max-w-3xl w-full mx-auto">
       <div className="text-center w-full">
         <h2 className="text-lg font-medium mb-2">Choose a Conversation Type</h2>
         <p className="text-muted-foreground text-sm md:text-base mx-auto max-w-2xl">

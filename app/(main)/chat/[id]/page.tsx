@@ -13,34 +13,29 @@ export default function Page(props: { params: { id: string } }) {
   const [initialMessages, setInitialMessages] = useState<Message[]>([]);
   
   useEffect(() => {
-    // Check for stored messages
-    const storedMessages = sessionStorage.getItem(`chat-${id}-messages`);
-    if (storedMessages) {
-      setInitialMessages(JSON.parse(storedMessages));
-      sessionStorage.removeItem(`chat-${id}-messages`);
-      return;
-    }
-
-    // If no stored messages, fetch from API
-    const fetchMessages = async () => {
+    const initializeChat = async () => {
       try {
         const response = await fetch(`/api/chat/messages?chatId=${id}`);
         if (!response.ok) {
           if (response.status === 404) {
-            notFound();
+            // For new chats, start with empty messages instead of throwing 404
+            setInitialMessages([]);
+            return;
           }
           throw new Error('Failed to fetch messages');
         }
         const messages = await response.json();
-        // Convert messages to UI format, handle empty array case
         setInitialMessages(messages.length > 0 ? convertToUIMessages(messages) : []);
-      } catch (error) {
+      } catch (error: any) {
         console.error('Failed to fetch messages:', error);
-        notFound();
+        // Only throw notFound for non-404 errors
+        if (error?.message !== 'Failed to fetch messages') {
+          notFound();
+        }
       }
     };
 
-    fetchMessages();
+    initializeChat();
   }, [id]);
 
   return (
@@ -52,4 +47,4 @@ export default function Page(props: { params: { id: string } }) {
       isReadonly={false}
     />
   );
-}
+} 

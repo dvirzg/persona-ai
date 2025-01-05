@@ -5,7 +5,7 @@ import { generateUUID } from '@/lib/utils';
 
 export default function ChatPage() {
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-[calc(100vh-4rem)]">
       <Chat 
         id={generateUUID()}
         initialMessages={[]}

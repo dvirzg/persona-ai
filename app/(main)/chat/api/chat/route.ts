@@ -60,13 +60,32 @@ export async function POST(request: Request) {
   if (!chat) {
     const title = await generateTitleFromUserMessage({ message: userMessage });
     await saveChat({ id, userId: session.user.id, title });
+    
+    // Save system prompt for new chats
+    await saveMessages({
+      messages: [
+        { 
+          id: generateUUID(), 
+          chatId: id, 
+          role: 'system', 
+          content: JSON.stringify({ text: systemPrompt }), 
+          createdAt: new Date() 
+        }
+      ]
+    });
   }
 
   const userMessageId = generateUUID();
 
   await saveMessages({
     messages: [
-      { id: userMessageId, chatId: id, role: userMessage.role, content: userMessage.content, createdAt: new Date() }
+      { 
+        id: userMessageId, 
+        chatId: id, 
+        role: userMessage.role, 
+        content: JSON.stringify({ text: userMessage.content }), 
+        createdAt: new Date() 
+      }
     ]
   });
 
@@ -101,7 +120,7 @@ export async function POST(request: Request) {
                     id: messageId,
                     chatId: id,
                     role: message.role,
-                    content: message.content,
+                    content: JSON.stringify({ text: message.content }),
                     createdAt: new Date(),
                   };
                 }),

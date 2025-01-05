@@ -43,7 +43,9 @@ export async function saveChat({ id, userId, title }: { id: string; userId: stri
 export async function saveMessages({ messages }: { messages: Array<{ id: string; chatId: string; role: string; content: any; createdAt: Date }> }): Promise<void> {
   try {
     for (const message of messages) {
-      const jsonContent = typeof message.content === 'string' ? JSON.stringify({ text: message.content }) : JSON.stringify(message.content);
+      const jsonContent = typeof message.content === 'string' 
+        ? message.content
+        : JSON.stringify(message.content);
       await sql`
         INSERT INTO messages (id, "chatId", role, content, "createdAt")
         VALUES (${message.id}, ${message.chatId}, ${message.role}, ${jsonContent}::jsonb, ${message.createdAt.toISOString()})

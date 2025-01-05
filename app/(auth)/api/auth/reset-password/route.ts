@@ -21,7 +21,7 @@ export async function POST(req: Request) {
       );
     }
 
-    await updateUserPassword(resetToken.userId, password);
+    await updateUserPassword({ id: resetToken.userId, password });
     await deletePasswordResetToken(token);
 
     return NextResponse.json({ message: 'Password updated successfully' });

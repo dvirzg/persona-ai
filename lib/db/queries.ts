@@ -126,7 +126,7 @@ export async function deleteMessagesByChatIdAfterTimestamp({ chatId, timestamp }
   }
 }
 
-export async function getDocumentsById(id: string) {
+export async function getDocumentsById({ id }: { id: string }) {
   try {
     const { rows } = await sql`
       SELECT * FROM documents

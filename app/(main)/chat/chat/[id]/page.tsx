@@ -32,7 +32,8 @@ export default function Page(props: { params: { id: string } }) {
           throw new Error('Failed to fetch messages');
         }
         const messages = await response.json();
-        setInitialMessages(convertToUIMessages(messages));
+        // Convert messages to UI format, handle empty array case
+        setInitialMessages(messages.length > 0 ? convertToUIMessages(messages) : []);
       } catch (error) {
         console.error('Failed to fetch messages:', error);
         notFound();

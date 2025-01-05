@@ -89,40 +89,44 @@ export function Chat({
           isReadonly={isReadonly}
         />
 
-        <div className="flex-1 overflow-y-auto">
-          <Messages
-            chatId={id}
-            isLoading={isLoading}
-            votes={votes}
-            messages={messages}
-            setMessages={setMessages as any}
-            reload={reload}
-            isReadonly={isReadonly}
-            isBlockVisible={isBlockVisible}
-            append={append}
-          />
-        </div>
-
-        <form 
-          className="flex mx-auto px-4 bg-background pb-4 md:pb-6 gap-2 w-full md:max-w-3xl"
-          onSubmit={(e) => handleSubmit(e)}
-        >
-          {!isReadonly && (
-            <MultimodalInput
+        <div className="flex flex-col flex-1 min-h-0">
+          <div className="flex-1 overflow-y-auto">
+            <Messages
               chatId={id}
-              input={input}
-              setInput={setInput}
-              handleSubmit={handleSubmit}
               isLoading={isLoading}
-              stop={stop}
-              attachments={attachments}
-              setAttachments={setAttachments}
+              votes={votes}
               messages={messages}
               setMessages={setMessages as any}
+              reload={reload}
+              isReadonly={isReadonly}
+              isBlockVisible={isBlockVisible}
               append={append}
             />
-          )}
-        </form>
+          </div>
+
+          <div className="flex-shrink-0 w-full bg-background">
+            <form 
+              className="flex mx-auto px-4 pb-4 md:pb-6 gap-2 w-full md:max-w-3xl"
+              onSubmit={(e) => handleSubmit(e)}
+            >
+              {!isReadonly && (
+                <MultimodalInput
+                  chatId={id}
+                  input={input}
+                  setInput={setInput}
+                  handleSubmit={handleSubmit}
+                  isLoading={isLoading}
+                  stop={stop}
+                  attachments={attachments}
+                  setAttachments={setAttachments}
+                  messages={messages}
+                  setMessages={setMessages as any}
+                  append={append}
+                />
+              )}
+            </form>
+          </div>
+        </div>
       </div>
 
       <Block

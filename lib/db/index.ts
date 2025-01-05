@@ -99,8 +99,23 @@ export async function voteMessage({ chatId, messageId, type }: { chatId: string;
   }
 }
 
+export async function deleteMessagesByChatId(chatId: string): Promise<void> {
+  try {
+    await sql`
+      DELETE FROM messages 
+      WHERE "chatId" = ${chatId}
+    `;
+  } catch (error) {
+    console.error('Failed to delete messages from database', error);
+    throw error;
+  }
+}
+
 export async function deleteChatById(id: string): Promise<void> {
   try {
+    // First delete all messages associated with the chat
+    await deleteMessagesByChatId(id);
+    // Then delete the chat itself
     await sql`
       DELETE FROM chats 
       WHERE id = ${id}

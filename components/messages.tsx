@@ -41,7 +41,7 @@ function PureMessages({
   return (
     <div
       ref={messagesContainerRef}
-      className="flex flex-col min-w-0 gap-6 flex-1 overflow-y-auto pt-4 pb-4 md:pb-6"
+      className="flex flex-col min-w-0 gap-6 mx-auto w-full md:max-w-3xl px-4 py-4 md:py-6"
     >
       {messages.length === 0 && !isReadonly && (
         <SuggestedActions chatId={chatId} append={append} />

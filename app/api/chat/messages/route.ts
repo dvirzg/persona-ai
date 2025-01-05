@@ -24,7 +24,8 @@ export async function GET(request: Request) {
 
     // Then get the messages
     const messages = await getMessagesByChatId(chatId);
-    return Response.json(messages);
+    // Return empty array if no messages found, instead of 404
+    return Response.json(messages || []);
   } catch (error) {
     console.error('Failed to fetch messages:', error);
     return new Response('Internal Server Error', { status: 500 });

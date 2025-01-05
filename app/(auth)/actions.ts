@@ -42,7 +42,7 @@ export async function register(formData: FormData): Promise<ActionState> {
 
     // Create user using the queries function
     console.log('Attempting to create new user');
-    await createUser(email, password);
+    await createUser({ email, password });
     console.log('User created successfully');
     
     console.log('Setting cookie and redirecting');

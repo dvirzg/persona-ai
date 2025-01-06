@@ -1,91 +1,134 @@
 import { sql } from '@vercel/postgres';
 import type { Chat, Message, Vote } from './types';
 
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 1000; // 1 second
+
+async function withRetry<T>(operation: () => Promise<T>): Promise<T> {
+  let lastError;
+  for (let i = 0; i < MAX_RETRIES; i++) {
+    try {
+      return await operation();
+    } catch (error) {
+      lastError = error;
+      if (i < MAX_RETRIES - 1) {
+        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY * (i + 1)));
+      }
+    }
+  }
+  throw lastError;
+}
+
 export async function getChatsByUserId(userId: string): Promise<Chat[]> {
-  try {
+  return withRetry(async () => {
     const { rows } = await sql<Chat>`
       SELECT * FROM chats 
       WHERE "userId" = ${userId}
       ORDER BY "createdAt" DESC
     `;
     return rows;
-  } catch (error) {
-    console.error('Failed to get chats by user from database', error);
-    throw error;
-  }
+  });
 }
 
 export async function getChatById(id: string): Promise<Chat | null> {
-  try {
+  return withRetry(async () => {
     const { rows } = await sql<Chat>`
       SELECT * FROM chats 
       WHERE id = ${id}
     `;
     return rows[0] || null;
-  } catch (error) {
-    console.error('Failed to get chat by id from database', error);
-    throw error;
-  }
+  });
 }
 
 export async function saveChat({ id, userId, title }: { id: string; userId: string; title: string }): Promise<void> {
-  try {
+  return withRetry(async () => {
     await sql`
       INSERT INTO chats (id, "userId", title, "createdAt")
       VALUES (${id}, ${userId}, ${title}, NOW())
     `;
-  } catch (error) {
-    console.error('Failed to save chat to database', error);
-    throw error;
-  }
+  });
 }
 
 export async function saveMessages({ messages }: { messages: Array<{ id: string; chatId: string; role: string; content: any; createdAt: Date }> }): Promise<void> {
-  try {
+  return withRetry(async () => {
     for (const message of messages) {
-      const jsonContent = typeof message.content === 'string' 
-        ? message.content
-        : JSON.stringify(message.content);
+      let messageContent;
+      
+      // Skip system messages
+      if (message.role === 'system') {
+        continue;
+      }
+
+      // Convert content to proper JSON format
+      if (typeof message.content === 'string') {
+        messageContent = JSON.stringify({ text: message.content });
+      } else if (message.role === 'assistant') {
+        if (typeof message.content === 'object' && message.content) {
+          if ('text' in message.content) {
+            messageContent = JSON.stringify(message.content);
+          } else if ('content' in message.content) {
+            messageContent = JSON.stringify({ text: message.content.content });
+          } else if (Array.isArray(message.content)) {
+            const text = message.content.map(item => 
+              typeof item === 'string' ? item : item.text || item.content || JSON.stringify(item)
+            ).join('\n');
+            messageContent = JSON.stringify({ text });
+          } else {
+            messageContent = JSON.stringify(message.content);
+          }
+        } else {
+          messageContent = JSON.stringify({ text: String(message.content) });
+        }
+      } else {
+        messageContent = JSON.stringify(
+          typeof message.content === 'object' ? 
+            message.content : 
+            { text: String(message.content) }
+        );
+      }
+
       await sql`
         INSERT INTO messages (id, "chatId", role, content, "createdAt")
-        VALUES (${message.id}, ${message.chatId}, ${message.role}, ${jsonContent}::jsonb, ${message.createdAt.toISOString()})
+        VALUES (${message.id}, ${message.chatId}, ${message.role}, ${messageContent}::jsonb, ${message.createdAt.toISOString()})
       `;
     }
-  } catch (error) {
-    console.error('Failed to save messages to database', error);
-    throw error;
-  }
+  });
 }
 
 export async function getMessagesByChatId(id: string): Promise<Message[]> {
-  try {
+  return withRetry(async () => {
     const { rows } = await sql<Message>`
-      SELECT * FROM messages 
+      SELECT 
+        id,
+        "chatId",
+        role,
+        content::text as content,
+        "createdAt"
+      FROM messages 
       WHERE "chatId" = ${id}
       ORDER BY "createdAt" ASC
     `;
-    return rows;
-  } catch (error) {
-    console.error('Failed to get messages by chat id from database', error);
-    throw error;
-  }
+    
+    // Parse JSON content
+    return rows.map(message => ({
+      ...message,
+      content: JSON.parse(message.content)
+    }));
+  });
 }
 
 export async function getVotesByChatId(chatId: string): Promise<Vote[]> {
-  try {
+  return withRetry(async () => {
     const { rows } = await sql<Vote>`
       SELECT * FROM votes 
       WHERE "chatId" = ${chatId}
     `;
     return rows;
-  } catch (error) {
-    console.error('Failed to get votes by chat id from database', error);
-    throw error;
-  }
+  });
 }
 
 export async function voteMessage({ chatId, messageId, type }: { chatId: string; messageId: string; type: 'up' | 'down' }): Promise<Vote> {
-  try {
+  return withRetry(async () => {
     const isUpvoted = type === 'up';
     const { rows } = await sql<Vote>`
       INSERT INTO votes ("chatId", "messageId", "isUpvoted")
@@ -95,48 +138,66 @@ export async function voteMessage({ chatId, messageId, type }: { chatId: string;
       RETURNING *
     `;
     return rows[0];
-  } catch (error) {
-    console.error('Failed to vote message in database', error);
-    throw error;
-  }
-}
-
-export async function deleteMessagesByChatId(chatId: string): Promise<void> {
-  try {
-    await sql`
-      DELETE FROM messages 
-      WHERE "chatId" = ${chatId}
-    `;
-  } catch (error) {
-    console.error('Failed to delete messages from database', error);
-    throw error;
-  }
+  });
 }
 
 export async function deleteChatById(id: string): Promise<void> {
-  try {
-    // First delete all messages associated with the chat
-    await deleteMessagesByChatId(id);
-    // Then delete the chat itself
-    await sql`
-      DELETE FROM chats 
-      WHERE id = ${id}
-    `;
-  } catch (error) {
-    console.error('Failed to delete chat from database', error);
-    throw error;
-  }
+  return withRetry(async () => {
+    const client = await sql.connect();
+    
+    try {
+      // Start transaction
+      await client.sql`BEGIN`;
+
+      // First check if chat exists and get its ID
+      const chatResult = await client.sql`
+        SELECT id FROM chats 
+        WHERE id = ${id}
+      `;
+
+      if (chatResult.rows.length === 0) {
+        await client.sql`ROLLBACK`;
+        throw new Error('Chat not found');
+      }
+
+      // Delete votes first
+      await client.sql`
+        DELETE FROM votes 
+        WHERE "chatId" = ${id}
+      `;
+
+      // Then delete messages
+      await client.sql`
+        DELETE FROM messages 
+        WHERE "chatId" = ${id}
+      `;
+
+      // Finally delete the chat
+      await client.sql`
+        DELETE FROM chats 
+        WHERE id = ${id}
+      `;
+
+      // Commit transaction
+      await client.sql`COMMIT`;
+    } catch (error) {
+      // Rollback on any error
+      await client.sql`ROLLBACK`;
+      console.error('Failed to delete chat:', error);
+      throw error;
+    } finally {
+      // Release the client back to the pool
+      client.release();
+    }
+  });
 }
 
 export async function updateChatVisiblityById({ chatId, visibility }: { chatId: string; visibility: string }): Promise<void> {
-  try {
+  return withRetry(async () => {
     await sql`
       UPDATE chats 
       SET visibility = ${visibility}
       WHERE id = ${chatId}
     `;
-  } catch (error) {
-    console.error('Failed to update chat visibility in database', error);
-    throw error;
-  }
+  });
 } 

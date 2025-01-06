@@ -200,6 +200,5 @@ export {
   getVotesByChatId,
   voteMessage,
   deleteChatById,
-  deleteMessagesByChatId,
   updateChatVisiblityById,
 } from './index';

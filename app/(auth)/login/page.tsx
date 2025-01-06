@@ -4,39 +4,46 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { signIn } from 'next-auth/react';
 
 import { AuthForm } from '@/components/auth-form';
 import { SubmitButton } from '@/components/submit-button';
-
-import { login } from '../actions';
 
 export default function Page() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [isSuccessful, setIsSuccessful] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (formData: FormData) => {
     try {
-      setEmail(formData.get('email') as string);
-      const result = await login(formData);
-      
-      if (result.status === 'invalid_credentials') {
+      setIsLoading(true);
+      const email = formData.get('email') as string;
+      const password = formData.get('password') as string;
+      setEmail(email);
+
+      const result = await signIn('credentials', {
+        email,
+        password,
+        redirect: false,
+        callbackUrl: '/chat'
+      });
+
+      if (result?.error) {
         toast.error('Invalid credentials');
-      } else if (result.status === 'failed') {
-        toast.error('Failed to sign in');
-      } else if (result.status === 'invalid_data') {
-        toast.error('Failed validating your submission!');
-      } else if (result.status === 'success') {
-        toast.success('Signed in successfully');
-        setIsSuccessful(true);
-        window.location.href = '/chat';
-      }
-    } catch (error) {
-      if (error instanceof Error && error.message === 'NEXT_REDIRECT') {
-        window.location.href = '/chat';
         return;
       }
+
+      setIsSuccessful(true);
+      toast.success('Signed in successfully');
+      
+      // Use replace instead of push to prevent back button from going back to login
+      router.replace('/chat');
+    } catch (error) {
       toast.error('An error occurred');
+      console.error('Login error:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -50,7 +57,9 @@ export default function Page() {
           </p>
         </div>
         <AuthForm onSubmit={handleSubmit} defaultEmail={email}>
-          <SubmitButton isSuccessful={isSuccessful}>Sign In</SubmitButton>
+          <SubmitButton isSuccessful={isSuccessful} disabled={isLoading}>
+            {isLoading ? 'Signing in...' : 'Sign In'}
+          </SubmitButton>
           <p className="text-center text-sm text-gray-600 mt-4 dark:text-zinc-400">
             {"Don't have an account? "}
             <Link

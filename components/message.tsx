@@ -107,7 +107,14 @@ const PurePreviewMessage = ({
                     'bg-muted/50 px-3 py-2 rounded-xl': isContextPrompt,
                   })}
                 >
-                  <Markdown>{typeof message.content === 'string' ? message.content : JSON.stringify(message.content)}</Markdown>
+                  <Markdown>{
+                    typeof message.content === 'string' ? 
+                      message.content : 
+                      typeof message.content === 'object' && message.content && 
+                      typeof (message.content as { text?: string }).text === 'string' ?
+                        (message.content as { text: string }).text :
+                        JSON.stringify(message.content)
+                  }</Markdown>
                 </div>
               </div>
             )}

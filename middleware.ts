@@ -1,31 +1,16 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { withAuth } from 'next-auth/middleware';
 
-export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-
-  // Redirect API requests to their new locations
-  if (pathname === '/api/chat') {
-    const url = request.nextUrl.clone();
-    url.pathname = '/chat/api/chat';
-    return NextResponse.rewrite(url);
-  }
-
-  if (pathname === '/api/history') {
-    const url = request.nextUrl.clone();
-    url.pathname = '/chat/api/history';
-    return NextResponse.rewrite(url);
-  }
-
-  if (pathname.startsWith('/api/vote')) {
-    const url = request.nextUrl.clone();
-    url.pathname = `/chat/api${pathname.slice(4)}`;
-    return NextResponse.rewrite(url);
-  }
-
-  return NextResponse.next();
-}
+export default withAuth({
+  callbacks: {
+    authorized: ({ token }) => !!token,
+  },
+});
 
 export const config = {
-  matcher: ['/api/:path*'],
+  matcher: [
+    '/',
+    '/chat/:path*',
+    '/context/:path*',
+    '/((?!api|_next/static|_next/image|favicon.ico|login|register).*)',
+  ],
 };

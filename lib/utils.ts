@@ -5,7 +5,7 @@ import type {
   CoreToolMessage,
   ToolInvocation,
 } from 'ai';
-import { clsx, type ClassValue } from 'clsx';
+import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
 import type { Message as DbMessage } from '@/lib/db/types';
@@ -63,23 +63,28 @@ export function convertToUIMessages(
   messages: Array<DbMessage>,
 ): Array<AIMessage> {
   return messages.reduce((chatMessages: Array<AIMessage>, message) => {
-    let content = message.content;
-    if (typeof content === 'string') {
-      try {
-        content = JSON.parse(content);
-      } catch {
-        // If parsing fails, use the string content as is
-      }
+    try {
+      const content = JSON.parse(message.content as string);
+      return [
+        ...chatMessages,
+        {
+          id: message.id,
+          role: message.role as AIMessage['role'],
+          content: content.text ?? content,
+          createdAt: new Date(message.createdAt),
+        },
+      ];
+    } catch {
+      return [
+        ...chatMessages,
+        {
+          id: message.id,
+          role: message.role as AIMessage['role'],
+          content: message.content,
+          createdAt: new Date(message.createdAt),
+        },
+      ];
     }
-    return [
-      ...chatMessages,
-      {
-        id: message.id,
-        role: message.role as AIMessage['role'],
-        content: content,
-        createdAt: new Date(message.createdAt),
-      },
-    ];
   }, []);
 }
 

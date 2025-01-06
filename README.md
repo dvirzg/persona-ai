@@ -1,6 +1,6 @@
 # PersonaChat AI
 
-A personalized AI chat app that learns about you through conversations and provides insights about your personality, conversation patterns, and interests. Built with Next.js 13, Vercel AI SDK, and Shadcn UI.
+A personalized AI chat app that learns about you through conversations and provides insights about your personality, conversation patterns, and interests. Built with Next.js 14, Vercel AI SDK, and Shadcn UI.
 
 ## Features
 
@@ -20,7 +20,7 @@ A personalized AI chat app that learns about you through conversations and provi
 
 ## Tech Stack
 
-- **Framework**: [Next.js 13](https://nextjs.org/) with App Router
+- **Framework**: [Next.js 14](https://nextjs.org/) with App Router
 - **AI Integration**: [Vercel AI SDK](https://sdk.vercel.ai/docs)
 - **Database**: PostgreSQL with [Drizzle ORM](https://orm.drizzle.team)
 - **Authentication**: [NextAuth.js](https://next-auth.js.org)

@@ -1,4 +1,4 @@
-import { type Message, type CoreMessage, type CoreToolMessage, type CoreUserMessage, createDataStreamResponse, streamText } from 'ai';
+import { type Message, type CoreMessage, type CoreToolMessage, type CoreUserMessage, type TextPart, type ToolCallPart, createDataStreamResponse, streamText } from 'ai';
 import { auth } from '@/app/(auth)/auth';
 import { customModel } from '@/lib/ai';
 import { models } from '@/lib/ai/models';
@@ -9,8 +9,10 @@ import { generateTitleFromUserMessage } from '../../actions';
 
 export const maxDuration = 60;
 
+type ValidCoreMessage = CoreMessage | CoreToolMessage | CoreUserMessage;
+
 // Helper function to convert UI messages to core messages
-function convertToCoreMessages(messages: Message[]): CoreMessage[] {
+function convertToCoreMessages(messages: Message[]): ValidCoreMessage[] {
   return messages.map(message => {
     if (message.role === 'user') {
       return {
@@ -26,11 +28,44 @@ function convertToCoreMessages(messages: Message[]): CoreMessage[] {
       } as CoreMessage;
     }
 
+    if (message.role === 'system' || message.role === 'data') {
+      // Don't include system or data messages from history
+      return null;
+    }
+
     return {
       role: message.role,
       content: message.content,
-    } as CoreMessage;
-  });
+    } as ValidCoreMessage;
+  }).filter((msg): msg is ValidCoreMessage => msg !== null);
+}
+
+function extractTextContent(content: string | TextPart | ToolCallPart | (TextPart | ToolCallPart)[]): string {
+  if (typeof content === 'string') {
+    return content;
+  }
+  
+  if (Array.isArray(content)) {
+    return content.map(part => {
+      if ('text' in part) {
+        return part.text;
+      }
+      if ('content' in part && typeof part.content === 'string') {
+        return part.content;
+      }
+      return JSON.stringify(part);
+    }).join('\n');
+  }
+  
+  if ('text' in content) {
+    return content.text;
+  }
+
+  if ('content' in content && typeof content.content === 'string') {
+    return content.content;
+  }
+  
+  return JSON.stringify(content);
 }
 
 export async function POST(request: Request) {
@@ -60,32 +95,13 @@ export async function POST(request: Request) {
   if (!chat) {
     const title = await generateTitleFromUserMessage({ message: userMessage });
     await saveChat({ id, userId: session.user.id, title });
-    
-    // Save system prompt for new chats
-    await saveMessages({
-      messages: [
-        { 
-          id: generateUUID(), 
-          chatId: id, 
-          role: 'system', 
-          content: JSON.stringify({ text: systemPrompt }), 
-          createdAt: new Date() 
-        }
-      ]
-    });
   }
 
   const userMessageId = generateUUID();
 
   await saveMessages({
     messages: [
-      { 
-        id: userMessageId, 
-        chatId: id, 
-        role: userMessage.role, 
-        content: JSON.stringify({ text: userMessage.content }), 
-        createdAt: new Date() 
-      }
+      { id: userMessageId, chatId: id, role: userMessage.role, content: userMessage.content, createdAt: new Date() }
     ]
   });
 
@@ -106,27 +122,34 @@ export async function POST(request: Request) {
             try {
               const responseMessagesWithoutIncompleteToolCalls = sanitizeResponseMessages(response.messages);
 
-              await saveMessages({
-                messages: responseMessagesWithoutIncompleteToolCalls.map((message) => {
+              // Process and save assistant messages
+              const messagesToSave = responseMessagesWithoutIncompleteToolCalls
+                .filter(message => message.role === 'assistant')
+                .map(message => {
                   const messageId = generateUUID();
+                  dataStream.writeMessageAnnotation({
+                    messageIdFromServer: messageId,
+                  });
 
-                  if (message.role === 'assistant') {
-                    dataStream.writeMessageAnnotation({
-                      messageIdFromServer: messageId,
-                    });
-                  }
+                  // Extract text content from assistant message
+                  const content = extractTextContent(message.content);
 
                   return {
                     id: messageId,
                     chatId: id,
                     role: message.role,
-                    content: JSON.stringify({ text: message.content }),
+                    content: content,
                     createdAt: new Date(),
                   };
-                }),
-              });
+                });
+
+              if (messagesToSave.length > 0) {
+                await saveMessages({ messages: messagesToSave });
+              } else {
+                console.error('No assistant messages to save');
+              }
             } catch (error) {
-              console.error('Failed to save chat');
+              console.error('Failed to save chat:', error);
             }
           }
         },
@@ -142,7 +165,7 @@ export async function DELETE(request: Request) {
   const id = searchParams.get('id');
 
   if (!id) {
-    return new Response('Not Found', { status: 404 });
+    return new Response('Chat ID is required', { status: 400 });
   }
 
   const session = await auth();
@@ -152,18 +175,21 @@ export async function DELETE(request: Request) {
   }
 
   try {
+    // First verify the chat belongs to the user
     const chat = await getChatById(id);
+    
+    if (!chat) {
+      return new Response('Chat not found', { status: 404 });
+    }
 
-    if (!chat || chat.userId !== session.user.id) {
+    if (chat.userId !== session.user.id) {
       return new Response('Unauthorized', { status: 401 });
     }
 
     await deleteChatById(id);
-
-    return new Response('Chat deleted', { status: 200 });
+    return new Response('Chat deleted successfully', { status: 200 });
   } catch (error) {
-    return new Response('An error occurred while processing your request', {
-      status: 500,
-    });
+    console.error('Failed to delete chat:', error);
+    return new Response('Failed to delete chat', { status: 500 });
   }
 }

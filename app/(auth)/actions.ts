@@ -3,6 +3,7 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
+import { signIn } from 'next-auth/react';
 
 import { getUser, createUser } from '@/lib/db/queries';
 import { hashPassword, verifyPassword } from '@/lib/password';
@@ -72,13 +73,13 @@ export async function login(formData: FormData): Promise<ActionState> {
 
     console.log('Login attempt for email:', data.email);
 
-    const result = authSchema.safeParse(data);
-    if (!result.success) {
-      console.error('Invalid data:', result.error);
+    const validationResult = authSchema.safeParse(data);
+    if (!validationResult.success) {
+      console.error('Invalid data:', validationResult.error);
       return { status: 'invalid_data' };
     }
 
-    const { email, password } = result.data;
+    const { email, password } = validationResult.data;
 
     const users = await getUser(email);
     console.log('Found users:', users);
@@ -101,13 +102,17 @@ export async function login(formData: FormData): Promise<ActionState> {
       return { status: 'invalid_credentials' };
     }
 
-    // Set cookie with Path=/
-    cookies().set('user_email', email, {
-      path: '/',
-      secure: true,
-      sameSite: 'lax'
+    const signInResult = await signIn('credentials', {
+      email,
+      password,
+      redirect: true,
+      callbackUrl: '/chat'
     });
-    
+
+    if (!signInResult?.ok) {
+      return { status: 'failed' };
+    }
+
     return { status: 'success' };
   } catch (error) {
     console.error('Login error:', error);

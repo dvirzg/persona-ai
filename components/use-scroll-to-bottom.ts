@@ -6,6 +6,7 @@ export function useScrollToBottom<T extends HTMLElement>(): [
 ] {
   const containerRef = useRef<T>(null);
   const endRef = useRef<T>(null);
+  const lastScrollHeight = useRef(0);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -13,7 +14,16 @@ export function useScrollToBottom<T extends HTMLElement>(): [
 
     if (container && end) {
       const observer = new MutationObserver(() => {
-        end.scrollIntoView({ behavior: 'instant', block: 'end' });
+        // Only auto-scroll if we're already near the bottom
+        const shouldAutoScroll = 
+          container.scrollHeight - (container.scrollTop + container.clientHeight) < 100 ||
+          container.scrollHeight > lastScrollHeight.current;
+        
+        lastScrollHeight.current = container.scrollHeight;
+
+        if (shouldAutoScroll) {
+          end.scrollIntoView({ behavior: 'instant', block: 'end' });
+        }
       });
 
       observer.observe(container, {

@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import { Chat } from '@/components/chat';
+import { LoadingIndicator } from '@/components/loading-indicator';
 import { DEFAULT_MODEL_NAME } from '@/lib/ai/models';
 import { convertToUIMessages } from '@/lib/utils';
 import type { Message } from 'ai';
@@ -11,10 +12,12 @@ import type { Message } from 'ai';
 export default function Page(props: { params: { id: string } }) {
   const { id } = props.params;
   const [initialMessages, setInitialMessages] = useState<Message[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
     const initializeChat = async () => {
       try {
+        setIsLoading(true);
         const response = await fetch(`/api/chat/messages?chatId=${id}`);
         if (!response.ok) {
           if (response.status === 404) {
@@ -32,11 +35,17 @@ export default function Page(props: { params: { id: string } }) {
         if (error?.message !== 'Failed to fetch messages') {
           notFound();
         }
+      } finally {
+        setIsLoading(false);
       }
     };
 
     initializeChat();
   }, [id]);
+
+  if (isLoading) {
+    return <LoadingIndicator className="h-[calc(100vh-4rem)]" />;
+  }
 
   return (
     <Chat

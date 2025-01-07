@@ -33,7 +33,7 @@ A personalized AI chat app that learns about you through conversations and provi
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 14+ 
 - PostgreSQL database
 - OpenAI API key
 

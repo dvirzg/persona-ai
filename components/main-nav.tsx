@@ -9,6 +9,7 @@ import { useChat } from 'ai/react';
 import { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 import { Logo } from './logo';
+import { useSession } from 'next-auth/react';
 
 const mainNavItems = [
   {
@@ -30,12 +31,13 @@ export function MainNav() {
   const router = useRouter();
   const { open, setOpenMobile } = useSidebar();
   const { setMessages } = useChat({ id: 'nav' });
+  const { data: session } = useSession();
   const [userEmail, setUserEmail] = useState<string | null>(null);
 
   useEffect(() => {
-    const email = Cookies.get('user_email');
+    const email = session?.user?.email || Cookies.get('user_email');
     setUserEmail(email || null);
-  }, []);
+  }, [session]);
 
   const handleNavigation = (href: string) => {
     if (href === '/chat') {

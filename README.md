@@ -1,6 +1,6 @@
 # PersonaChat AI
 
-A personalized AI chat app that learns about you through conversations and provides insights about your personality, conversation patterns, and interests. Built with Next.js 14, Vercel AI SDK, and Shadcn UI.
+A personalized AI chat app that learns about you through conversations and provides insights about your personality, conversation patterns, and interests. Built with Next.js 14 and FastAPI.
 
 ## Features
 
@@ -20,20 +20,25 @@ A personalized AI chat app that learns about you through conversations and provi
 
 ## Tech Stack
 
+### Frontend (Vercel)
 - **Framework**: [Next.js 14](https://nextjs.org/) with App Router
-- **AI Integration**: [Vercel AI SDK](https://sdk.vercel.ai/docs)
 - **Database**: PostgreSQL with [Drizzle ORM](https://orm.drizzle.team)
 - **Authentication**: [NextAuth.js](https://next-auth.js.org)
 - **UI Components**: [shadcn/ui](https://ui.shadcn.com)
 - **Styling**: [Tailwind CSS](https://tailwindcss.com)
 - **Icons**: [Lucide](https://lucide.dev)
-- **Graph Visualization**: [React Force Graph](https://github.com/vasturiano/react-force-graph)
+
+### Backend (Separate Host)
+- **Message Processing**: FastAPI Python service
+- **LLM Integration**: OpenAI API with streaming support
+- **Database**: Shared PostgreSQL database
 
 ## Getting Started
 
 ### Prerequisites
 
 - Node.js 18+ 
+- Python 3.8+
 - PostgreSQL database
 - OpenAI API key
 
@@ -45,28 +50,52 @@ A personalized AI chat app that learns about you through conversations and provi
    cd persona-ai
    ```
 
-2. Install dependencies:
+2. Install frontend dependencies:
    ```bash
    npm install
    ```
 
-3. Copy the example environment file:
+3. Set up the Python message processing service:
    ```bash
-   cp .env.example .env
+   cd lib
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   pip install -r requirements.txt
    ```
 
-4. Update `.env` with your credentials:
+4. Copy the example environment files:
+   ```bash
+   cp .env.example .env
+   cd lib && cp .env.example .env
    ```
-   # Database
+
+5. Update environment files with your credentials:
+   ```
+   # Frontend (.env)
    POSTGRES_URL=
-   
-   # Auth
    NEXTAUTH_URL=http://localhost:3000
    NEXTAUTH_SECRET=
+   MESSAGE_PROCESSOR_URL=http://localhost:8000  # In production, use your deployed service URL
    
-   # OpenAI
+   # Backend (lib/.env)
    OPENAI_API_KEY=
    ```
+
+### Running the Application
+
+1. Start the Python message processing service:
+   ```bash
+   cd lib
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   python server.py
+   ```
+
+2. In a new terminal, start the Next.js development server:
+   ```bash
+   npm run dev
+   ```
+
+The application will be available at `http://localhost:3000`.
 
 ### Database Setup
 
@@ -80,54 +109,75 @@ A personalized AI chat app that learns about you through conversations and provi
    npm run db:seed
    ```
 
-### Development
+## Deployment
 
-1. Start the development server:
-   ```bash
-   npm run dev
-   ```
+### Frontend (Vercel)
 
-2. Open [http://localhost:3000](http://localhost:3000) in your browser.
+1. Push your code to GitHub
+2. Connect your repository to Vercel
+3. Add environment variables in Vercel dashboard:
+   - `POSTGRES_URL`
+   - `NEXTAUTH_URL`
+   - `NEXTAUTH_SECRET`
+   - `MESSAGE_PROCESSOR_URL`
 
-### Production
+### Backend (e.g., Heroku, DigitalOcean, Railway)
 
-1. Build the application:
-   ```bash
-   npm run build
-   ```
+1. Choose a hosting platform that supports long-running Python processes
+2. Deploy the contents of the `lib` directory
+3. Set environment variables:
+   - `OPENAI_API_KEY`
+4. Update CORS settings in `server.py` with your Vercel domain
+5. Update `MESSAGE_PROCESSOR_URL` in your Vercel deployment to point to your backend service
 
-2. Start the production server:
-   ```bash
-   npm start
-   ```
+## Architecture
 
-## Project Structure
+The application uses a distributed architecture:
 
+1. **Frontend (Vercel)**
+   - Handles UI/UX
+   - User authentication
+   - Database interactions
+   - Message streaming
+
+2. **Message Processing Service (Separate Host)**
+   - Processes user messages
+   - Interacts with OpenAI API
+   - Handles message history
+   - Generates chat titles
+
+This separation allows for:
+- Independent scaling of components
+- Platform-agnostic message processing
+- Easier testing and maintenance
+- Future mobile app integration
+
+## Development
+
+### Frontend Development
+```bash
+npm run dev
 ```
-├── app/                   # Next.js 14 app directory
-│   ├── (auth)/           # Authentication routes
-│   ├── (main)/           # Main application routes
-│   └── api/              # API routes
-├── components/           # React components
-│   ├── ui/              # UI components from shadcn/ui
-│   └── ...              # Custom components
-├── lib/                 # Utility functions and configurations
-│   ├── db/             # Database configurations and schemas
-│   └── store/          # State management
-└── public/             # Static assets
+
+### Message Processing Service Development
+```bash
+cd lib
+python server.py
 ```
 
-## Contributing
+## Testing
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+To test the API endpoints:
 
-## Credits
+1. Frontend tests:
+   ```bash
+   npm test
+   ```
 
-This project is built upon the [Vercel AI Chatbot](https://github.com/vercel-labs/ai-chatbot) template, with significant modifications and additional features.
+2. Message processing service:
+   - Start the server
+   - Visit `http://localhost:8000/docs`
+   - Try out the endpoints
 
 ## License
 

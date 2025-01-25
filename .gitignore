@@ -39,3 +39,7 @@ yarn-error.log*
 
 .vercel
 .env*.local
+
+
+# openai docs
+openai_readme.md

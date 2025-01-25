@@ -1,79 +1,29 @@
-import { type Message, type CoreMessage, type CoreToolMessage, type CoreUserMessage, type TextPart, type ToolCallPart, createDataStreamResponse, streamText } from 'ai';
 import { auth } from '@/app/(auth)/auth';
-import { customModel } from '@/lib/ai';
 import { models } from '@/lib/ai/models';
 import { systemPrompt } from '@/lib/ai/prompts';
 import { getChatById, saveChat, saveMessages, deleteChatById } from '@/lib/db/queries';
-import { generateUUID, getMostRecentUserMessage, sanitizeResponseMessages } from '@/lib/utils';
+import { generateUUID, getMostRecentUserMessage } from '@/lib/utils';
 import { generateTitleFromUserMessage } from '../../actions';
+
+// Get the message processing service URL from environment variable
+const MESSAGE_PROCESSOR_URL = process.env.MESSAGE_PROCESSOR_URL || 'http://localhost:8000';
 
 export const maxDuration = 60;
 
-type ValidCoreMessage = CoreMessage | CoreToolMessage | CoreUserMessage;
-
 // Helper function to convert UI messages to core messages
-function convertToCoreMessages(messages: Message[]): ValidCoreMessage[] {
-  return messages.map(message => {
-    if (message.role === 'user') {
-      return {
-        role: 'user',
-        content: message.content,
-      } as CoreUserMessage;
-    }
-
-    if (message.role === 'assistant') {
-      return {
-        role: 'assistant',
-        content: message.content,
-      } as CoreMessage;
-    }
-
-    if (message.role === 'system' || message.role === 'data') {
-      // Don't include system or data messages from history
-      return null;
-    }
-
-    return {
-      role: message.role,
-      content: message.content,
-    } as ValidCoreMessage;
-  }).filter((msg): msg is ValidCoreMessage => msg !== null);
-}
-
-function extractTextContent(content: string | TextPart | ToolCallPart | (TextPart | ToolCallPart)[]): string {
-  if (typeof content === 'string') {
-    return content;
-  }
-  
-  if (Array.isArray(content)) {
-    return content.map(part => {
-      if ('text' in part) {
-        return part.text;
-      }
-      if ('content' in part && typeof part.content === 'string') {
-        return part.content;
-      }
-      return JSON.stringify(part);
-    }).join('\n');
-  }
-  
-  if ('text' in content) {
-    return content.text;
-  }
-
-  if ('content' in content && typeof content.content === 'string') {
-    return content.content;
-  }
-  
-  return JSON.stringify(content);
+function convertToCoreMessages(messages: any[]): any[] {
+  return messages.map(message => ({
+    role: message.role,
+    content: message.content,
+  })).filter(msg => msg.role !== 'system' && msg.role !== 'data');
 }
 
 export async function POST(request: Request) {
-  const { id, messages, modelId }: { id: string; messages: Array<Message>; modelId: string } = await request.json();
+  const { id, messages, modelId } = await request.json();
 
   const session = await auth();
 
-  if (!session || !session.user || !session.user.id) {
+  if (!session?.user?.id) {
     return new Response('Unauthorized', { status: 401 });
   }
 
@@ -84,7 +34,7 @@ export async function POST(request: Request) {
   }
 
   const coreMessages = convertToCoreMessages(messages);
-  const userMessage = getMostRecentUserMessage(coreMessages) as CoreUserMessage;
+  const userMessage = getMostRecentUserMessage(coreMessages);
 
   if (!userMessage) {
     return new Response('No user message found', { status: 400 });
@@ -99,63 +49,95 @@ export async function POST(request: Request) {
 
   const userMessageId = generateUUID();
 
+  // Save the user message first
   await saveMessages({
     messages: [
       { id: userMessageId, chatId: id, role: userMessage.role, content: userMessage.content, createdAt: new Date() }
     ]
   });
 
-  return createDataStreamResponse({
-    execute: (dataStream) => {
-      dataStream.writeData({
-        type: 'user-message-id',
-        content: userMessageId,
-      });
+  // Create a TransformStream for streaming the response
+  const encoder = new TextEncoder();
+  const stream = new TransformStream();
+  const writer = stream.writable.getWriter();
 
-      const result = streamText({
-        model: customModel(model.apiIdentifier),
-        system: systemPrompt,
-        messages: coreMessages,
-        maxSteps: 5,
-        onFinish: async ({ response }) => {
-          if (session.user?.id) {
-            try {
-              const responseMessagesWithoutIncompleteToolCalls = sanitizeResponseMessages(response.messages);
+  // Start processing in the background
+  (async () => {
+    try {
+      // Send user message ID
+      await writer.write(
+        encoder.encode(`data: ${JSON.stringify({ type: 'user-message-id', content: userMessageId })}\n\n`)
+      );
 
-              // Process and save assistant messages
-              const messagesToSave = responseMessagesWithoutIncompleteToolCalls
-                .filter(message => message.role === 'assistant')
-                .map(message => {
-                  const messageId = generateUUID();
-                  dataStream.writeMessageAnnotation({
-                    messageIdFromServer: messageId,
-                  });
-
-                  // Extract text content from assistant message
-                  const content = extractTextContent(message.content);
-
-                  return {
-                    id: messageId,
-                    chatId: id,
-                    role: message.role,
-                    content: content,
-                    createdAt: new Date(),
-                  };
-                });
-
-              if (messagesToSave.length > 0) {
-                await saveMessages({ messages: messagesToSave });
-              } else {
-                console.error('No assistant messages to save');
-              }
-            } catch (error) {
-              console.error('Failed to save chat:', error);
-            }
-          }
+      // Call our Python message processing service
+      const response = await fetch(`${MESSAGE_PROCESSOR_URL}/process-message`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
+        body: JSON.stringify({
+          user_message: userMessage.content,
+          chat_id: id,
+          user_id: session.user.id,
+          message_history: coreMessages,
+          system_prompt: systemPrompt,
+        }),
       });
 
-      result.mergeIntoDataStream(dataStream);
+      if (!response.ok) {
+        throw new Error('Failed to process message');
+      }
+
+      const result = await response.json();
+
+      if (result.status === 'error') {
+        throw new Error(result.error);
+      }
+
+      // Get the assistant's message
+      const assistantMessage = result.assistant_message;
+      
+      // Send assistant message ID
+      await writer.write(
+        encoder.encode(`data: ${JSON.stringify({ type: 'assistant-message-id', content: assistantMessage.id })}\n\n`)
+      );
+
+      // Send the content
+      await writer.write(
+        encoder.encode(`data: ${JSON.stringify({ type: 'text', content: assistantMessage.content })}\n\n`)
+      );
+
+      // Save the assistant's message
+      await saveMessages({
+        messages: [{
+          id: assistantMessage.id,
+          chatId: id,
+          role: 'assistant',
+          content: assistantMessage.content,
+          createdAt: new Date(assistantMessage.created_at)
+        }]
+      });
+
+      // Send done event
+      await writer.write(
+        encoder.encode(`data: ${JSON.stringify({ type: 'done', content: null })}\n\n`)
+      );
+
+    } catch (error) {
+      console.error('Error processing message:', error);
+      await writer.write(
+        encoder.encode(`data: ${JSON.stringify({ type: 'error', content: 'An error occurred while processing your message.' })}\n\n`)
+      );
+    } finally {
+      await writer.close();
+    }
+  })();
+
+  return new Response(stream.readable, {
+    headers: {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive',
     },
   });
 }
@@ -170,12 +152,11 @@ export async function DELETE(request: Request) {
 
   const session = await auth();
 
-  if (!session || !session.user) {
+  if (!session?.user) {
     return new Response('Unauthorized', { status: 401 });
   }
 
   try {
-    // First verify the chat belongs to the user
     const chat = await getChatById(id);
     
     if (!chat) {

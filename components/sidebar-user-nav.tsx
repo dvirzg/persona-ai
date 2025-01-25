@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useTheme } from 'next-themes';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
+import { signOut } from 'next-auth/react';
 
 import {
   DropdownMenu,
@@ -23,8 +24,11 @@ export function SidebarUserNav({ user }: { user: User }) {
   const { setTheme, theme } = useTheme();
   const router = useRouter();
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
     Cookies.remove('user_email');
+    
+    await signOut({ redirect: false });
+    
     router.push('/login');
     router.refresh();
   };

@@ -1,15 +1,16 @@
 'use server';
 
-import { type CoreUserMessage, generateText } from 'ai';
+import { type CoreUserMessage } from 'ai';
 import { cookies } from 'next/headers';
-
-import { customModel } from '@/lib/ai';
 import {
   deleteMessagesByChatIdAfterTimestamp,
   getMessageById,
   updateChatVisiblityById,
 } from '@/lib/db/queries';
 import { VisibilityType } from '@/components/visibility-selector';
+
+// Get the message processing service URL from environment variable
+const MESSAGE_PROCESSOR_URL = process.env.MESSAGE_PROCESSOR_URL || 'http://localhost:8000';
 
 export async function saveModelId(model: string) {
   const cookieStore = await cookies();
@@ -21,17 +22,22 @@ export async function generateTitleFromUserMessage({
 }: {
   message: CoreUserMessage;
 }) {
-  const { text: title } = await generateText({
-    model: customModel('gpt-4o-mini'),
-    system: `\n
-    - you will generate a short title based on the first message a user begins a conversation with
-    - ensure it is not more than 80 characters long
-    - the title should be a summary of the user's message
-    - do not use quotes or colons`,
-    prompt: JSON.stringify(message),
+  const response = await fetch(`${MESSAGE_PROCESSOR_URL}/generate-title`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      message: message.content,
+    }),
   });
 
-  return title;
+  if (!response.ok) {
+    return 'New Chat';
+  }
+
+  const result = await response.json();
+  return result.title;
 }
 
 export async function deleteTrailingMessages({ id }: { id: string }) {
@@ -46,12 +52,6 @@ export async function deleteTrailingMessages({ id }: { id: string }) {
   });
 }
 
-export async function updateChatVisibility({
-  chatId,
-  visibility,
-}: {
-  chatId: string;
-  visibility: VisibilityType;
-}) {
+export async function updateChatVisibility({ chatId, visibility }: { chatId: string; visibility: VisibilityType }) {
   await updateChatVisiblityById({ chatId, visibility });
 }

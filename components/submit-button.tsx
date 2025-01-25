@@ -16,13 +16,12 @@ export function SubmitButton({
   disabled?: boolean;
 }) {
   const { pending } = useFormStatus();
-  const isDisabled = pending || isSuccessful || disabled;
 
   return (
     <Button
       type={pending ? 'button' : 'submit'}
-      aria-disabled={isDisabled}
-      disabled={isDisabled}
+      aria-disabled={pending || isSuccessful || disabled}
+      disabled={pending || isSuccessful || disabled}
       className="relative"
     >
       {children}
@@ -34,7 +33,7 @@ export function SubmitButton({
       )}
 
       <output aria-live="polite" className="sr-only">
-        {isDisabled ? 'Loading' : 'Submit form'}
+        {pending || isSuccessful ? 'Loading' : 'Submit form'}
       </output>
     </Button>
   );

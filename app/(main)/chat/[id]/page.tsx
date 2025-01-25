@@ -3,7 +3,7 @@
 import { notFound } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-import { Chat } from '@/components/chat';
+import { Chat, type ChatMessage } from '@/components/chat';
 import { LoadingIndicator } from '@/components/loading-indicator';
 import { DEFAULT_MODEL_NAME } from '@/lib/ai/models';
 import { convertToUIMessages } from '@/lib/utils';
@@ -11,7 +11,7 @@ import type { Message } from 'ai';
 
 export default function Page(props: { params: { id: string } }) {
   const { id } = props.params;
-  const [initialMessages, setInitialMessages] = useState<Message[]>([]);
+  const [initialMessages, setInitialMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
@@ -28,7 +28,9 @@ export default function Page(props: { params: { id: string } }) {
           throw new Error('Failed to fetch messages');
         }
         const messages = await response.json();
-        setInitialMessages(messages.length > 0 ? convertToUIMessages(messages) : []);
+        const uiMessages = messages.length > 0 ? convertToUIMessages(messages) : [];
+        // Filter out data messages and cast to ChatMessage type
+        setInitialMessages(uiMessages.filter(msg => msg.role !== 'data') as ChatMessage[]);
       } catch (error: any) {
         console.error('Failed to fetch messages:', error);
         // Only throw notFound for non-404 errors

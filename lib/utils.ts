@@ -62,30 +62,32 @@ export function generateUUID(): string {
 export function convertToUIMessages(
   messages: Array<DbMessage>,
 ): Array<AIMessage> {
-  return messages.reduce((chatMessages: Array<AIMessage>, message) => {
-    try {
-      const content = JSON.parse(message.content as string);
-      return [
-        ...chatMessages,
-        {
-          id: message.id,
-          role: message.role as AIMessage['role'],
-          content: content.text ?? content,
-          createdAt: new Date(message.createdAt),
-        },
-      ];
-    } catch {
-      return [
-        ...chatMessages,
-        {
-          id: message.id,
-          role: message.role as AIMessage['role'],
-          content: message.content,
-          createdAt: new Date(message.createdAt),
-        },
-      ];
-    }
-  }, []);
+  return messages
+    .filter(message => message.role !== 'data')
+    .reduce((chatMessages: Array<AIMessage>, message) => {
+      try {
+        const content = JSON.parse(message.content as string);
+        return [
+          ...chatMessages,
+          {
+            id: message.id,
+            role: message.role as AIMessage['role'],
+            content: content.text ?? content,
+            createdAt: new Date(message.createdAt),
+          },
+        ];
+      } catch {
+        return [
+          ...chatMessages,
+          {
+            id: message.id,
+            role: message.role as AIMessage['role'],
+            content: message.content,
+            createdAt: new Date(message.createdAt),
+          },
+        ];
+      }
+    }, []);
 }
 
 export function getMostRecentUserMessage(messages: Array<CoreMessage>) {

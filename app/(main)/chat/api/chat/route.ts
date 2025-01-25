@@ -7,6 +7,7 @@ import { generateTitleFromUserMessage } from '../../actions';
 
 // Get the message processing service URL from environment variable
 const MESSAGE_PROCESSOR_URL = process.env.MESSAGE_PROCESSOR_URL || 'http://localhost:8000';
+const API_KEY = process.env.BACKEND_API_KEY || 'your-secret-api-key';  // You'll set this in Vercel
 
 export const maxDuration = 60;
 
@@ -74,6 +75,7 @@ export async function POST(request: Request) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-API-Key': API_KEY,
         },
         body: JSON.stringify({
           user_message: userMessage.content,

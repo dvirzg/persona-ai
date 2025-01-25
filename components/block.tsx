@@ -9,6 +9,8 @@ import { useDebounceCallback, useWindowSize } from 'usehooks-ts';
 
 import type { Document, Suggestion, Vote } from '@/lib/db/types';
 import { cn, fetcher } from '@/lib/utils';
+import type { ChatMessage } from '@/lib/types';
+import { convertToChatMessage, convertToMessage } from '@/lib/utils';
 
 import { DiffView } from './diffview';
 import { DocumentSkeleton } from './document-skeleton';
@@ -48,6 +50,23 @@ export interface ConsoleOutput {
   content: string | null;
 }
 
+interface BlockProps {
+  chatId: string;
+  input: string;
+  setInput: (input: string) => void;
+  handleSubmit: (event?: { preventDefault?: () => void }, chatRequestOptions?: ChatRequestOptions) => void;
+  isLoading: boolean;
+  stop: () => void;
+  attachments: Array<Attachment>;
+  setAttachments: Dispatch<SetStateAction<Array<Attachment>>>;
+  messages: Message[];
+  setMessages: Dispatch<SetStateAction<Message[]>>;
+  append: (message: Message | CreateMessage, chatRequestOptions?: ChatRequestOptions) => Promise<string | null | undefined>;
+  reload: (chatRequestOptions?: ChatRequestOptions) => Promise<string | null | undefined>;
+  votes: Array<Vote> | undefined;
+  isReadonly: boolean;
+}
+
 function PureBlock({
   chatId,
   input,
@@ -63,32 +82,7 @@ function PureBlock({
   reload,
   votes,
   isReadonly,
-}: {
-  chatId: string;
-  input: string;
-  setInput: (input: string) => void;
-  isLoading: boolean;
-  stop: () => void;
-  attachments: Array<Attachment>;
-  setAttachments: Dispatch<SetStateAction<Array<Attachment>>>;
-  messages: Array<Message>;
-  setMessages: Dispatch<SetStateAction<Array<Message>>>;
-  votes: Array<Vote> | undefined;
-  append: (
-    message: Message | CreateMessage,
-    chatRequestOptions?: ChatRequestOptions,
-  ) => Promise<string | null | undefined>;
-  handleSubmit: (
-    event?: {
-      preventDefault?: () => void;
-    },
-    chatRequestOptions?: ChatRequestOptions,
-  ) => void;
-  reload: (
-    chatRequestOptions?: ChatRequestOptions,
-  ) => Promise<string | null | undefined>;
-  isReadonly: boolean;
-}) {
+}: BlockProps) {
   const { block, setBlock } = useBlock();
 
   const {

@@ -1,6 +1,6 @@
 'use client';
 
-import type { Attachment, Message, ChatRequestOptions } from 'ai';
+import type { Attachment, Message, ChatRequestOptions, CreateMessage } from 'ai';
 import { useChat } from 'ai/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import useSWR, { useSWRConfig } from 'swr';
@@ -15,16 +15,9 @@ import { Messages } from './messages';
 import { VisibilityType } from './visibility-selector';
 import { useBlockSelector } from '@/hooks/use-block';
 
-export interface ChatMessage {
-  id: string;
-  role: 'user' | 'assistant' | 'system';
-  content: string;
-  createdAt?: Date;
-}
-
 interface ChatProps {
   id: string;
-  initialMessages: ChatMessage[];
+  initialMessages: Message[];
   selectedModelId: string;
   selectedVisibilityType: VisibilityType;
   isReadonly: boolean;
@@ -38,7 +31,7 @@ export function Chat({
   isReadonly,
 }: ChatProps) {
   const { mutate } = useSWRConfig();
-  const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
+  const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -61,7 +54,7 @@ export function Chat({
     setIsLoading(true);
 
     try {
-      const userMessage: ChatMessage = {
+      const userMessage: Message = {
         id: generateUUID(),
         role: 'user',
         content: input,
@@ -91,7 +84,7 @@ export function Chat({
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
-      let assistantMessage: Partial<ChatMessage> = {};
+      let assistantMessage: Partial<Message> = {};
 
       while (true) {
         const { value, done } = await reader.read();
@@ -113,7 +106,7 @@ export function Chat({
                 content: '',
                 createdAt: new Date(),
               };
-              setMessages(messages => [...messages, assistantMessage as ChatMessage]);
+              setMessages(messages => [...messages, assistantMessage as Message]);
             } else if (data.type === 'text') {
               assistantMessage.content = (assistantMessage.content || '') + data.content;
               setMessages(messages => 
@@ -146,8 +139,11 @@ export function Chat({
     return null;
   }, []);
 
-  const append = useCallback(async (message: ChatMessage) => {
-    setMessages(messages => [...messages, message]);
+  const append = useCallback(async (message: Message | CreateMessage, chatRequestOptions?: ChatRequestOptions) => {
+    if (!message.id) {
+      message = { ...message, id: generateUUID() };
+    }
+    setMessages(messages => [...messages, message as Message]);
     return message.id;
   }, []);
 

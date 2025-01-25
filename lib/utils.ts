@@ -4,11 +4,14 @@ import type {
   CoreMessage,
   CoreToolMessage,
   ToolInvocation,
+  Message,
+  CreateMessage,
 } from 'ai';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
 import type { Message as DbMessage } from '@/lib/db/types';
+import type { ChatMessage } from '@/lib/types';
 
 interface MessageContent {
   type: string;
@@ -59,35 +62,15 @@ export function generateUUID(): string {
   });
 }
 
-export function convertToUIMessages(
-  messages: Array<DbMessage>,
-): Array<AIMessage> {
+export function convertToUIMessages(messages: DbMessage[]): Message[] {
   return messages
     .filter(message => message.role !== 'data')
-    .reduce((chatMessages: Array<AIMessage>, message) => {
-      try {
-        const content = JSON.parse(message.content as string);
-        return [
-          ...chatMessages,
-          {
-            id: message.id,
-            role: message.role as AIMessage['role'],
-            content: content.text ?? content,
-            createdAt: new Date(message.createdAt),
-          },
-        ];
-      } catch {
-        return [
-          ...chatMessages,
-          {
-            id: message.id,
-            role: message.role as AIMessage['role'],
-            content: message.content,
-            createdAt: new Date(message.createdAt),
-          },
-        ];
-      }
-    }, []);
+    .map(message => ({
+      id: message.id,
+      role: message.role as Message['role'],
+      content: message.content,
+      createdAt: message.createdAt,
+    }));
 }
 
 export function getMostRecentUserMessage(messages: Array<CoreMessage>) {
@@ -185,4 +168,20 @@ export function sanitizeUIMessages(messages: Array<AIMessage>): Array<AIMessage>
       message.content.length > 0 ||
       (message.toolInvocations && message.toolInvocations.length > 0),
   );
+}
+
+export function convertToChatMessage(message: Message | CreateMessage): ChatMessage {
+  return {
+    ...message,
+    id: message.id || generateUUID(),
+    role: message.role === 'data' ? 'system' : message.role,
+    createdAt: message.createdAt || new Date(),
+  } as ChatMessage;
+}
+
+export function convertToMessage(message: ChatMessage): Message {
+  return {
+    ...message,
+    role: message.role,
+  };
 }

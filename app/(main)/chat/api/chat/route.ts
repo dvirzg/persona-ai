@@ -6,8 +6,18 @@ import { generateUUID, getMostRecentUserMessage } from '@/lib/utils';
 import { generateTitleFromUserMessage } from '../../actions';
 
 // Get the message processing service URL from environment variable
-const MESSAGE_PROCESSOR_URL = process.env.MESSAGE_PROCESSOR_URL || 'http://localhost:8000';
-const API_KEY = process.env.BACKEND_API_KEY || 'your-secret-api-key';  // You'll set this in Vercel
+const MESSAGE_PROCESSOR_URL = process.env.MESSAGE_PROCESSOR_URL;
+if (!MESSAGE_PROCESSOR_URL) {
+  throw new Error('MESSAGE_PROCESSOR_URL environment variable is not set');
+}
+const API_KEY = process.env.BACKEND_API_KEY;
+if (!API_KEY) {
+  throw new Error('BACKEND_API_KEY environment variable is not set');
+}
+
+// Now TypeScript knows these variables are defined
+const apiKey: string = API_KEY;
+const processorUrl: string = MESSAGE_PROCESSOR_URL;
 
 export const maxDuration = 60;
 
@@ -70,12 +80,27 @@ export async function POST(request: Request) {
         encoder.encode(`data: ${JSON.stringify({ type: 'user-message-id', content: userMessageId })}\n\n`)
       );
 
+      console.log('Making request to backend:', {
+        url: `${processorUrl}/process-message`,
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-Key': apiKey.substring(0, 4) + '...',  // Log only first 4 chars of API key
+        },
+        body: {
+          user_message: userMessage.content,
+          chat_id: id,
+          user_id: session.user.id,
+          message_history: coreMessages,
+          system_prompt: systemPrompt,
+        }
+      });
+
       // Call our Python message processing service
-      const response = await fetch(`${MESSAGE_PROCESSOR_URL}/process-message`, {
+      const response = await fetch(`${processorUrl}/process-message`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-API-Key': API_KEY,
+          'X-API-Key': apiKey,
         },
         body: JSON.stringify({
           user_message: userMessage.content,
@@ -86,11 +111,16 @@ export async function POST(request: Request) {
         }),
       });
 
+      console.log('Backend response status:', response.status);
+      
       if (!response.ok) {
-        throw new Error('Failed to process message');
+        const errorText = await response.text();
+        console.error('Backend error:', errorText);
+        throw new Error(`Failed to process message: ${errorText}`);
       }
 
       const result = await response.json();
+      console.log('Backend response:', result);
 
       if (result.status === 'error') {
         throw new Error(result.error);

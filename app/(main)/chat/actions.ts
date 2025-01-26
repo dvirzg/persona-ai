@@ -10,7 +10,10 @@ import {
 import { VisibilityType } from '@/components/visibility-selector';
 
 // Get the message processing service URL from environment variable
-const MESSAGE_PROCESSOR_URL = process.env.MESSAGE_PROCESSOR_URL || 'http://localhost:8000';
+const MESSAGE_PROCESSOR_URL = process.env.MESSAGE_PROCESSOR_URL;
+if (!MESSAGE_PROCESSOR_URL) {
+  throw new Error('MESSAGE_PROCESSOR_URL environment variable is not set');
+}
 
 export async function saveModelId(model: string) {
   const cookieStore = await cookies();

@@ -169,28 +169,34 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const router = useRouter();
   const handleDelete = async () => {
-    const deletePromise = fetch(`/chat/api/chat?id=${deleteId}`, {
-      method: 'DELETE',
-    });
+    try {
+      const response = await fetch(`/chat/api/chat?id=${deleteId}`, {
+        method: 'DELETE',
+      });
 
-    toast.promise(deletePromise, {
-      loading: 'Deleting chat...',
-      success: () => {
-        mutate((history) => {
-          if (history) {
-            return history.filter((h) => h.id !== deleteId);
-          }
-          return history;
-        });
-        return 'Chat deleted successfully';
-      },
-      error: 'Failed to delete chat',
-    });
+      if (!response.ok) {
+        throw new Error('Failed to delete chat');
+      }
 
-    setShowDeleteDialog(false);
+      toast.success('Chat deleted successfully');
+      
+      // Update local state
+      mutate((history) => {
+        if (history) {
+          return history.filter((h) => h.id !== deleteId);
+        }
+        return history;
+      }, false); // false means don't revalidate
 
-    if (deleteId === id) {
-      router.push('/');
+      setShowDeleteDialog(false);
+
+      // Navigate if we're deleting the current chat
+      if (deleteId === id) {
+        router.push('/');
+      }
+    } catch (error) {
+      toast.error('Failed to delete chat');
+      console.error('Error deleting chat:', error);
     }
   };
 

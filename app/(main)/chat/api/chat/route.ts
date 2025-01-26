@@ -80,21 +80,6 @@ export async function POST(request: Request) {
         encoder.encode(`data: ${JSON.stringify({ type: 'user-message-id', content: userMessageId })}\n\n`)
       );
 
-      console.log('Making request to backend:', {
-        url: `${processorUrl}/process-message`,
-        headers: {
-          'Content-Type': 'application/json',
-          'X-API-Key': apiKey.substring(0, 4) + '...',  // Log only first 4 chars of API key
-        },
-        body: {
-          user_message: userMessage.content,
-          chat_id: id,
-          user_id: session.user.id,
-          message_history: coreMessages,
-          system_prompt: systemPrompt,
-        }
-      });
-
       // Call our Python message processing service
       const response = await fetch(`${processorUrl}/process-message`, {
         method: 'POST',
@@ -110,8 +95,6 @@ export async function POST(request: Request) {
           system_prompt: systemPrompt,
         }),
       });
-
-      console.log('Backend response status:', response.status);
       
       if (!response.ok) {
         const errorText = await response.text();
@@ -120,7 +103,6 @@ export async function POST(request: Request) {
       }
 
       const result = await response.json();
-      console.log('Backend response:', result);
 
       if (result.status === 'error') {
         throw new Error(result.error);

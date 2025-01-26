@@ -38,9 +38,7 @@ A personalized AI chat app that learns about you through conversations and provi
 ### Prerequisites
 
 - Node.js 18+ 
-- Python 3.8+
 - PostgreSQL database
-- OpenAI API key
 
 ### Environment Setup
 
@@ -55,42 +53,23 @@ A personalized AI chat app that learns about you through conversations and provi
    npm install
    ```
 
-3. Set up the Python message processing service:
-   ```bash
-   cd lib
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   pip install -r requirements.txt
-   ```
-
-4. Copy the example environment files:
+3. Copy the example environment file:
    ```bash
    cp .env.example .env
-   cd lib && cp .env.example .env
    ```
 
-5. Update environment files with your credentials:
+4. Update environment file with your credentials:
    ```
    # Frontend (.env)
    POSTGRES_URL=
    NEXTAUTH_URL=http://localhost:3000
    NEXTAUTH_SECRET=
-   MESSAGE_PROCESSOR_URL=http://localhost:8000  # In production, use your deployed service URL
-   
-   # Backend (lib/.env)
-   OPENAI_API_KEY=
+   MESSAGE_PROCESSOR_URL=  # URL of your deployed backend service
    ```
 
 ### Running the Application
 
-1. Start the Python message processing service:
-   ```bash
-   cd lib
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   python server.py
-   ```
-
-2. In a new terminal, start the Next.js development server:
+1. Start the Next.js development server:
    ```bash
    npm run dev
    ```
@@ -140,8 +119,8 @@ The application uses a distributed architecture:
    - Database interactions
    - Message streaming
 
-2. **Message Processing Service (Separate Host)**
-   - Processes user messages
+2. **Message Processing Service (Railway)**
+   - Processes user messages via a separate backend service
    - Interacts with OpenAI API
    - Handles message history
    - Generates chat titles
@@ -159,25 +138,12 @@ This separation allows for:
 npm run dev
 ```
 
-### Message Processing Service Development
-```bash
-cd lib
-python server.py
-```
-
 ## Testing
 
-To test the API endpoints:
-
-1. Frontend tests:
-   ```bash
-   npm test
-   ```
-
-2. Message processing service:
-   - Start the server
-   - Visit `http://localhost:8000/docs`
-   - Try out the endpoints
+To test the frontend:
+```bash
+npm test
+```
 
 ## License
 

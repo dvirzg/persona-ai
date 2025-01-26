@@ -29,6 +29,7 @@ export async function generateTitleFromUserMessage({
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'X-API-Key': process.env.BACKEND_API_KEY!,
     },
     body: JSON.stringify({
       message: message.content,
@@ -36,6 +37,7 @@ export async function generateTitleFromUserMessage({
   });
 
   if (!response.ok) {
+    console.error('Failed to generate title:', await response.text());
     return 'New Chat';
   }
 

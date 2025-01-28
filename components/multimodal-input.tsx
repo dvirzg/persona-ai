@@ -102,28 +102,32 @@ function PureMultimodalInput({
     adjustHeight();
   };
 
+  // Reset height when input is cleared
+  useEffect(() => {
+    if (input === '' && textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = 'min-h-[24px]';
+    }
+  }, [input]);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadQueue, setUploadQueue] = useState<Array<string>>([]);
 
-  const submitForm = useCallback(() => {
-    window.history.replaceState({}, '', `/chat/${chatId}`);
-    handleSubmit({
-      preventDefault: () => {},
-    });
+  const submitForm = useCallback(async () => {
+    if (isLoading) return;
 
-    setAttachments([]);
-    setLocalStorageInput('');
+    const currentInput = input.trim();
+    if (!currentInput) return;
 
-    if (width && width > 768) {
-      textareaRef.current?.focus();
+    // Clear input and reset height before submitting
+    setInput('');
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = 'min-h-[24px]';
     }
-  }, [
-    handleSubmit,
-    setAttachments,
-    setLocalStorageInput,
-    width,
-    chatId,
-  ]);
+
+    await handleSubmit();
+  }, [handleSubmit, input, isLoading]);
 
   const uploadFile = async (file: File) => {
     const formData = new FormData();

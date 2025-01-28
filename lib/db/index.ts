@@ -102,20 +102,23 @@ export async function getMessagesByChatId(id: string): Promise<Message[]> {
         id,
         "chatId",
         role,
-        content,
+        content::text as content,
         "createdAt"
       FROM messages 
       WHERE "chatId" = ${id}
       ORDER BY "createdAt" ASC
     `;
-
-    // Parse the content properly
-    return rows.map(message => ({
-      ...message,
-      content: typeof message.content === 'string' ? 
-        JSON.parse(message.content) : 
-        message.content
-    }));
+    
+    // Parse JSON content and extract text
+    return rows.map(message => {
+      const parsedContent = JSON.parse(message.content);
+      return {
+        ...message,
+        content: typeof parsedContent === 'object' && parsedContent !== null ? 
+          parsedContent.text || JSON.stringify(parsedContent) : 
+          String(parsedContent)
+      };
+    });
   });
 }
 

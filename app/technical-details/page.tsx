@@ -1,183 +1,169 @@
+'use client';
+
+import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
 
 export default function TechnicalDetails() {
   return (
-    <div className="min-h-screen bg-[#0A0B14] text-white relative overflow-hidden">
+    <div className="w-full min-h-screen flex flex-col bg-[#0A0B14] text-white relative overflow-hidden selection:bg-blue-500/20">
       {/* Background Effects */}
       <div className="absolute inset-0 w-full overflow-hidden">
-        {/* Main gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0A0B14] via-[#141B31] to-[#0A0B14]" />
+        {/* Main dark background */}
+        <div className="absolute inset-0 bg-[#070B19]" />
         
-        {/* Deep blue regions */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#1a1f35]/80 via-transparent to-[#0e1220]" />
-        <div className="absolute inset-0 bg-gradient-to-tr from-[#141b31]/50 via-transparent to-[#0f1424]" />
+        {/* Dark corner regions */}
+        <div className="absolute -top-[20%] -left-[20%] w-[80%] h-[80%] bg-[#050709] rounded-full blur-[100px] animate-swoosh" />
+        <div className="absolute -bottom-[20%] -right-[20%] w-[80%] h-[80%] bg-[#050709] rounded-full blur-[100px] animate-swoosh-reverse" />
         
-        {/* Glowing blue accents */}
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-500/20 rounded-full blur-[100px] animate-slow-drift" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500/20 rounded-full blur-[100px] animate-slow-drift-reverse" />
+        {/* Large blue gradient regions */}
+        <div className="absolute top-[-20%] right-[-20%] w-[90%] h-[90%] bg-[#1B3A77]/20 rounded-full blur-[120px] animate-wild" />
+        <div className="absolute bottom-[-10%] left-[-10%] w-[70%] h-[70%] bg-[#1B3A77]/20 rounded-full blur-[120px] animate-wild" />
         
-        {/* Subtle gradient overlays */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,_rgba(17,24,39,0.1),rgba(17,24,39,0.7))]" />
+        {/* Brighter blue accents */}
+        <div className="absolute top-[10%] left-[20%] w-[40%] h-[40%] bg-[#3B7BF7]/10 rounded-full blur-[90px] animate-mega-pulse" />
+        <div className="absolute bottom-[20%] right-[10%] w-[50%] h-[50%] bg-[#3B7BF7]/10 rounded-full blur-[90px] animate-mega-pulse" />
         
-        {/* Additional blue accents */}
-        <div className="absolute inset-0 bg-gradient-to-t from-blue-900/[0.05] via-transparent to-transparent" />
+        {/* Additional dark regions that move independently */}
+        <div className="absolute top-1/4 left-1/3 w-[60%] h-[60%] bg-[#050709]/80 rounded-full blur-[150px] animate-swoosh" />
+        <div className="absolute bottom-1/3 right-1/4 w-[70%] h-[70%] bg-[#050709]/80 rounded-full blur-[150px] animate-swoosh-reverse" />
         
-        {/* Noise and glass effect */}
-        <div className="absolute inset-0 bg-noise opacity-[0.015] mix-blend-soft-light" />
-        <div className="absolute inset-0 backdrop-blur-3xl" />
+        {/* Subtle moving gradients */}
+        <div className="absolute inset-0 opacity-80">
+          <div className="absolute inset-0 bg-gradient-to-t from-[#070B19] via-transparent to-transparent animate-wild" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#070B19] via-transparent to-transparent animate-wild" />
+        </div>
+        
+        {/* Center darker region */}
+        <div className="absolute inset-0 bg-gradient-radial from-transparent via-[#070B19]/50 to-transparent animate-mega-pulse" />
+        
+        {/* Additional blue glows */}
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#1B3A77]/10 rounded-full blur-[150px] animate-swoosh" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#1B3A77]/10 rounded-full blur-[150px] animate-swoosh-reverse" />
+        
+        {/* Noise overlay */}
+        <div className="absolute inset-0 bg-noise opacity-[0.02] mix-blend-soft-light" />
+        
+        {/* Final gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#050709]/80 via-transparent to-[#050709]/80 animate-wild" />
       </div>
 
-      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12 md:py-16 relative">
-        <Link href="/" className="inline-flex mb-8 sm:mb-12">
-          <Button variant="ghost" className="group flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 transition-transform group-hover:-translate-x-1">
-              <path d="m15 18-6-6 6-6"/>
-            </svg>
-            Back to Home
-          </Button>
+      {/* Back Button */}
+      <div className="p-6 relative">
+        <Link href="/" className="text-blue-400 flex items-center gap-2 hover:opacity-80 transition-opacity">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+          Back to Home
         </Link>
+      </div>
 
-        <div className="max-w-4xl mx-auto space-y-12 sm:space-y-16">
-          <div className="space-y-4">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent tracking-tight">
-              Technical Details
-            </h1>
-            <p className="text-lg sm:text-xl text-gray-400/90 max-w-2xl">
-              Built with cutting-edge technologies to provide a seamless, secure, and performant experience.
-            </p>
-          </div>
+      <div className="max-w-4xl mx-auto px-6 pb-20 relative">
+        {/* Header Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-16 space-y-4"
+        >
+          <h1 className="text-4xl md:text-5xl font-bold">
+            Built for the future
+          </h1>
+          <p className="text-gray-400 text-lg md:text-xl max-w-2xl">
+            Leveraging cutting-edge AI and modern web technologies to create a secure, 
+            scalable, and lightning-fast social AI platform.
+          </p>
+        </motion.div>
 
-          <div className="grid gap-6 sm:gap-8 md:grid-cols-2">
-            <section className="group">
-              <div className="bg-white/[0.03] backdrop-blur-xl rounded-2xl p-6 sm:p-8 border border-white/[0.08] hover:border-blue-500/30 transition-all duration-300 hover:translate-y-[-2px] hover:bg-white/[0.06] active:translate-y-[1px] hover:shadow-xl hover:shadow-blue-500/[0.1] h-full">
-                <div className="flex items-center gap-3 mb-6">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6 text-blue-400/90 transition-transform group-hover:scale-110 duration-300">
-                    <path d="m7 11 2-2-2-2"/>
-                    <path d="M11 13h4"/>
-                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                  </svg>
-                  <h2 className="text-xl font-semibold text-white/90">Architecture</h2>
+        {/* Core Features */}
+        <div className="space-y-16">
+          {/* AI Stack */}
+          <motion.section 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="space-y-6"
+          >
+            <h2 className="text-2xl font-semibold text-blue-400">AI Stack</h2>
+            <div className="bg-gray-900/50 backdrop-blur-md rounded-2xl p-6 space-y-4">
+              <div className="flex items-start gap-4">
+                <div className="bg-blue-500/10 p-3 rounded-xl">
+                  <span className="text-2xl">🧠</span>
                 </div>
-                <ul className="space-y-3 text-gray-300/90">
-                  <li className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400/60" />
-                    Next.js 14 with App Router
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400/60" />
-                    TypeScript for type safety
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400/60" />
-                    Tailwind CSS for styling
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400/60" />
-                    NextAuth.js for authentication
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400/60" />
-                    Prisma as ORM
-                  </li>
-                </ul>
-              </div>
-            </section>
-
-            <section className="group">
-              <div className="bg-white/[0.03] backdrop-blur-xl rounded-2xl p-6 sm:p-8 border border-white/[0.08] hover:border-blue-500/30 transition-all duration-300 hover:translate-y-[-2px] hover:bg-white/[0.06] active:translate-y-[1px] hover:shadow-xl hover:shadow-blue-500/[0.1] h-full">
-                <div className="flex items-center gap-3 mb-6">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6 text-blue-400/90 transition-transform group-hover:scale-110 duration-300">
-                    <path d="M12 2a10 10 0 1 0 10 10H12V2Z"/>
-                    <path d="M12 12 2.1 12.5"/>
-                    <path d="m14 7 5.7-5.7"/>
-                    <path d="m14 17 5.7 5.7"/>
-                    <path d="m7 14-5.7 5.7"/>
-                    <path d="m7 4-5.7-5.7"/>
-                  </svg>
-                  <h2 className="text-xl font-semibold text-white/90">AI Integration</h2>
+                <div>
+                  <h3 className="text-lg font-medium">Advanced Language Models</h3>
+                  <p className="text-gray-400">State-of-the-art LLMs for natural conversation and context understanding</p>
                 </div>
-                <ul className="space-y-3 text-gray-300/90">
-                  <li className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400/60" />
-                    Advanced LLM for natural language understanding
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400/60" />
-                    Context-aware conversation processing
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400/60" />
-                    Real-time personality analysis
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400/60" />
-                    Secure data handling and privacy protection
-                  </li>
-                </ul>
               </div>
-            </section>
-
-            <section className="group">
-              <div className="bg-white/[0.03] backdrop-blur-xl rounded-2xl p-6 sm:p-8 border border-white/[0.08] hover:border-blue-500/30 transition-all duration-300 hover:translate-y-[-2px] hover:bg-white/[0.06] active:translate-y-[1px] hover:shadow-xl hover:shadow-blue-500/[0.1] h-full">
-                <div className="flex items-center gap-3 mb-6">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6 text-blue-400/90 transition-transform group-hover:scale-110 duration-300">
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                  </svg>
-                  <h2 className="text-xl font-semibold text-white/90">Security Features</h2>
+              <div className="flex items-start gap-4">
+                <div className="bg-purple-500/10 p-3 rounded-xl">
+                  <span className="text-2xl">🔄</span>
                 </div>
-                <ul className="space-y-3 text-gray-300/90">
-                  <li className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400/60" />
-                    End-to-end encryption for messages
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400/60" />
-                    OAuth 2.0 authentication flow
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400/60" />
-                    Regular security audits
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400/60" />
-                    GDPR compliant data handling
-                  </li>
-                </ul>
-              </div>
-            </section>
-
-            <section className="group">
-              <div className="bg-white/[0.03] backdrop-blur-xl rounded-2xl p-6 sm:p-8 border border-white/[0.08] hover:border-blue-500/30 transition-all duration-300 hover:translate-y-[-2px] hover:bg-white/[0.06] active:translate-y-[1px] hover:shadow-xl hover:shadow-blue-500/[0.1] h-full">
-                <div className="flex items-center gap-3 mb-6">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6 text-blue-400/90 transition-transform group-hover:scale-110 duration-300">
-                    <path d="m8 14-6-6 6-6"/>
-                    <path d="M16 8v12a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V10h0a4 4 0 0 0-4-4h0v2"/>
-                  </svg>
-                  <h2 className="text-xl font-semibold text-white/90">Performance</h2>
+                <div>
+                  <h3 className="text-lg font-medium">Real-time Learning</h3>
+                  <p className="text-gray-400">Continuous personality adaptation and context awareness</p>
                 </div>
-                <ul className="space-y-3 text-gray-300/90">
-                  <li className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400/60" />
-                    Edge runtime deployment
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400/60" />
-                    Optimized API response times
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400/60" />
-                    Efficient caching strategies
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400/60" />
-                    Real-time updates via WebSocket
-                  </li>
-                </ul>
               </div>
-            </section>
-          </div>
+            </div>
+          </motion.section>
+
+          {/* Security & Privacy */}
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="space-y-6"
+          >
+            <h2 className="text-2xl font-semibold text-green-400">Security & Privacy</h2>
+            <div className="bg-gray-900/50 backdrop-blur-md rounded-2xl p-6 space-y-4">
+              <div className="flex items-start gap-4">
+                <div className="bg-green-500/10 p-3 rounded-xl">
+                  <span className="text-2xl">🔒</span>
+                </div>
+                <div>
+                  <h3 className="text-lg font-medium">Enterprise-grade Security</h3>
+                  <p className="text-gray-400">End-to-end encryption, OAuth 2.0, and regular security audits</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <div className="bg-green-500/10 p-3 rounded-xl">
+                  <span className="text-2xl">🛡️</span>
+                </div>
+                <div>
+                  <h3 className="text-lg font-medium">Data Protection</h3>
+                  <p className="text-gray-400">GDPR-compliant data handling with user privacy at the core</p>
+                </div>
+              </div>
+            </div>
+          </motion.section>
+
+          {/* Technical Architecture */}
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="space-y-6"
+          >
+            <h2 className="text-2xl font-semibold text-purple-400">Modern Stack</h2>
+            <div className="bg-gray-900/50 backdrop-blur-md rounded-2xl p-6 space-y-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="bg-gray-800/50 p-4 rounded-xl text-center">
+                  <p className="text-sm text-gray-400">Frontend</p>
+                  <p className="font-medium">Next.js 14</p>
+                </div>
+                <div className="bg-gray-800/50 p-4 rounded-xl text-center">
+                  <p className="text-sm text-gray-400">Language</p>
+                  <p className="font-medium">TypeScript</p>
+                </div>
+                <div className="bg-gray-800/50 p-4 rounded-xl text-center">
+                  <p className="text-sm text-gray-400">Database</p>
+                  <p className="font-medium">Prisma ORM</p>
+                </div>
+                <div className="bg-gray-800/50 p-4 rounded-xl text-center">
+                  <p className="text-sm text-gray-400">Deployment</p>
+                  <p className="font-medium">Edge Runtime</p>
+                </div>
+              </div>
+            </div>
+          </motion.section>
         </div>
       </div>
     </div>

@@ -73,13 +73,22 @@ export default function LandingPage() {
                 Sign up
               </Link>
             </div>
-            <div className="flex items-center justify-center lg:justify-start">
+            <div className="flex items-center justify-center lg:justify-start gap-4">
               <Link href="/technical-details">
                 <Button className="group flex items-center gap-2.5 px-5 py-2.5 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] active:bg-white/[0.08] border border-white/[0.05] hover:border-blue-500/20 transition-all duration-300 backdrop-blur-xl text-[15px] font-medium text-gray-400/90 hover:text-white shadow-sm shadow-black/5">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 text-blue-400/80 transition-transform group-hover:scale-110 duration-300">
                     <path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/>
                   </svg>
                   <span className="tracking-tight">Technical Details</span>
+                </Button>
+              </Link>
+              <Link href="/demo">
+                <Button className="group flex items-center gap-2.5 px-5 py-2.5 rounded-xl bg-orange-500/10 hover:bg-orange-500/20 active:bg-orange-500/30 border border-orange-500/20 hover:border-orange-500/30 transition-all duration-300 backdrop-blur-xl text-[15px] font-medium text-orange-400/90 hover:text-orange-400 shadow-sm shadow-black/5">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 text-orange-400/80 transition-transform group-hover:scale-110 duration-300">
+                    <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
+                    <path d="m9 12 2 2 4-4"/>
+                  </svg>
+                  <span className="tracking-tight">Try Demo</span>
                 </Button>
               </Link>
             </div>

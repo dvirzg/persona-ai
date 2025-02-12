@@ -557,9 +557,9 @@ export default function TechnicalDetails() {
                         </ul>
                       </div>
                     </div>
-                  </div>
                 </div>
               </div>
+            </div>
 
               {/* Conclusion */}
               <div className="bg-gray-900/30 rounded-xl p-5 mt-12">
@@ -567,7 +567,7 @@ export default function TechnicalDetails() {
                 <p className="text-gray-300 leading-relaxed text-lg">
                   Persona bridges the gap between transactional chatbots and human-like understanding by <span className="text-orange-400 font-medium">automating context learning</span> and focusing on <span className="text-orange-400 font-medium">real-world social utility</span>. Its modular pipeline allows iterative development, starting with lightweight personalization and scaling to deep introspection—all while minimizing user effort. By combining <span className="text-orange-400 font-medium">Bayesian adaptability</span> with <span className="text-orange-400 font-medium">RL-driven personalization</span>, Persona dynamically balances confidence and exploration, ensuring responses are both personalized and contextually aware. Prioritizing privacy, scalability, and practical problem-solving, Persona redefines how AI can serve as a <span className="text-orange-400 font-medium">low-burden thought partner</span> for modern life.
                 </p>
-              </div>
+        </div>
             </motion.div>
           )}
         </AnimatePresence>

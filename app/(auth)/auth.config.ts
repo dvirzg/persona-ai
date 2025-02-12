@@ -22,9 +22,18 @@ export const authMiddlewareConfig = {
     authorized({ auth, request: { nextUrl } }: { auth: any; request: { nextUrl: URL } }) {
       const isLoggedIn = !!auth?.user;
       const isOnAuth = nextUrl.pathname.startsWith('/login') || nextUrl.pathname.startsWith('/register');
+      const isPublicPath = nextUrl.pathname === '/' || 
+                          nextUrl.pathname === '/technical-details' ||
+                          nextUrl.pathname.startsWith('/api') ||
+                          nextUrl.pathname.startsWith('/_next') ||
+                          nextUrl.pathname === '/favicon.ico';
       
       if (isOnAuth) {
         if (isLoggedIn) return Response.redirect(new URL('/', nextUrl));
+        return true;
+      }
+
+      if (isPublicPath) {
         return true;
       }
 

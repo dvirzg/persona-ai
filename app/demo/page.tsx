@@ -139,8 +139,8 @@ export default function DemoPage() {
         {/* Mobile Layout */}
         {isMobile ? (
           <>
-            {/* Main Content Area with padding for bottom sheet */}
-            <div className="flex-1 overflow-y-auto pb-[80px]">
+            {/* Main Content Area with padding for bottom sheet and safe area */}
+            <div className="flex-1 overflow-y-auto pb-[calc(80px+env(safe-area-inset-bottom))] md:pb-[80px]">
               <div className="p-4">
                 <div className="mb-6">
                   <h1 className="text-2xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-gray-100 via-blue-100 to-white">
@@ -210,18 +210,20 @@ export default function DemoPage() {
               </div>
             </div>
 
-            {/* Bottom Sheet Trigger - Fixed Position */}
-            <div className="fixed bottom-0 left-0 right-0 w-full bg-[#070B19]/95 backdrop-blur-md border-t border-gray-800/50 p-4 shadow-lg shadow-black/20">
-              <button
-                onClick={() => setShowBottomSheet(true)}
-                className="w-full py-3.5 px-4 rounded-2xl bg-blue-500/10 border border-blue-500/30 text-blue-400 font-medium flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
-              >
-                {selectedPersona ? 'Change Selection' : 'Choose Persona'}
-                <ChevronDown className="w-4 h-4" />
-              </button>
+            {/* Bottom Sheet Trigger - Fixed Position with safe area inset */}
+            <div className="fixed bottom-0 left-0 right-0 w-full bg-[#070B19]/95 backdrop-blur-md border-t border-gray-800/50 pb-[env(safe-area-inset-bottom)] shadow-lg shadow-black/20">
+              <div className="p-4">
+                <button
+                  onClick={() => setShowBottomSheet(true)}
+                  className="w-full py-3.5 px-4 rounded-2xl bg-blue-500/10 border border-blue-500/30 text-blue-400 font-medium flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+                >
+                  {selectedPersona ? 'Change Selection' : 'Choose Persona'}
+                  <ChevronDown className="w-4 h-4" />
+                </button>
+              </div>
             </div>
 
-            {/* Bottom Sheet - Higher z-index */}
+            {/* Bottom Sheet - Higher z-index and safe area padding */}
             <AnimatePresence>
               {showBottomSheet && (
                 <>
@@ -240,7 +242,7 @@ export default function DemoPage() {
                     animate={{ y: 0 }}
                     exit={{ y: '100%' }}
                     transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                    className="fixed bottom-0 left-0 right-0 bg-[#0A0B14] rounded-t-[32px] z-[70] max-h-[85vh] overflow-y-auto pb-8"
+                    className="fixed bottom-0 left-0 right-0 bg-[#0A0B14] rounded-t-[32px] z-[70] max-h-[85vh] overflow-y-auto pb-[calc(2rem+env(safe-area-inset-bottom))]"
                   >
                     <div className="p-4">
                       {/* Handle */}

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, User, Brain, MessageSquare, Sparkles, ArrowRight, ChevronDown } from 'lucide-react';
+import { ChevronLeft, User, Brain, MessageSquare, Sparkles, ArrowRight, ChevronDown, RotateCcw } from 'lucide-react';
 
 // Test personas from our database
 const TEST_PERSONAS = [
@@ -106,6 +106,13 @@ export default function DemoPage() {
 
   const selectedPersonaData = TEST_PERSONAS.find(p => p.id === selectedPersona);
 
+  const resetDemo = () => {
+    setSelectedPersona(null);
+    setSelectedPrompt(null);
+    setShowComparison(false);
+    setExpandedPersona(null);
+  };
+
   return (
     <div className="h-screen w-screen overflow-hidden bg-[#0A0B14] text-white">
       {/* Background Effects */}
@@ -126,15 +133,24 @@ export default function DemoPage() {
               <ChevronLeft className="w-5 h-5" />
               Back
             </Link>
-            {selectedPersona && (
-              <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
+              {(selectedPersona || selectedPrompt) && (
+                <button
+                  onClick={resetDemo}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-800/50 hover:bg-gray-800/70 border border-gray-700/50 text-gray-400 hover:text-white transition-all"
+                >
+                  <RotateCcw className="w-4 h-4" />
+                  <span className="text-sm">Reset</span>
+                </button>
+              )}
+              {selectedPersona && (
                 <div className={`px-3 py-1.5 rounded-full bg-${selectedPersonaData?.color}-500/20 border border-${selectedPersonaData?.color}-500/30`}>
                   <span className={`text-sm font-medium text-${selectedPersonaData?.color}-400`}>
                     {selectedPersonaData?.name}
                   </span>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
 

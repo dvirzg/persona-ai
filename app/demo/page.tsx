@@ -92,6 +92,8 @@ export default function DemoPage() {
   const [expandedPersona, setExpandedPersona] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [showBottomSheet, setShowBottomSheet] = useState(false);
+  const [showPersonaSelect, setShowPersonaSelect] = useState(false);
+  const [showPromptSelect, setShowPromptSelect] = useState(false);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -139,8 +141,8 @@ export default function DemoPage() {
         {/* Mobile Layout */}
         {isMobile ? (
           <>
-            {/* Main Content Area with padding for bottom sheet and safe area */}
-            <div className="flex-1 overflow-y-auto pb-[calc(80px+env(safe-area-inset-bottom))] md:pb-[80px]">
+            {/* Main Content Area */}
+            <div className="flex-1 overflow-y-auto">
               <div className="p-4">
                 <div className="mb-6">
                   <h1 className="text-2xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-gray-100 via-blue-100 to-white">
@@ -151,16 +153,43 @@ export default function DemoPage() {
                   </p>
                 </div>
 
-                {/* Steps Progress */}
+                {/* Steps Progress - Now Interactive */}
                 <div className="flex items-center gap-3 mb-6">
-                  <div className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl ${!selectedPersona ? 'bg-blue-500/20 border-blue-500/50 text-blue-400' : 'bg-green-500/20 border-green-500/50 text-green-400'} border`}>
+                  <button
+                    onClick={() => !selectedPrompt && setShowPersonaSelect(true)}
+                    className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl border transition-all ${
+                      !selectedPersona 
+                        ? 'bg-blue-500/20 border-blue-500/50 text-blue-400' 
+                        : 'bg-green-500/20 border-green-500/50 text-green-400'
+                    }`}
+                  >
                     <User className="w-4 h-4" />
-                    <span className="text-sm font-medium">Choose Persona</span>
-                  </div>
-                  <div className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl ${selectedPersona && !selectedPrompt ? 'bg-blue-500/20 border-blue-500/50 text-blue-400' : selectedPrompt ? 'bg-green-500/20 border-green-500/50 text-green-400' : 'bg-gray-800/50 border-gray-700/50 text-gray-500'} border`}>
+                    <span className="text-sm font-medium">
+                      {selectedPersona 
+                        ? selectedPersonaData?.name 
+                        : 'Choose Persona'
+                      }
+                    </span>
+                  </button>
+                  <button
+                    onClick={() => selectedPersona && !showComparison && setShowPromptSelect(true)}
+                    disabled={!selectedPersona}
+                    className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl border transition-all ${
+                      !selectedPersona 
+                        ? 'bg-gray-800/50 border-gray-700/50 text-gray-500'
+                        : selectedPrompt
+                          ? 'bg-green-500/20 border-green-500/50 text-green-400'
+                          : 'bg-blue-500/20 border-blue-500/50 text-blue-400'
+                    }`}
+                  >
                     <MessageSquare className="w-4 h-4" />
-                    <span className="text-sm font-medium">Select Prompt</span>
-                  </div>
+                    <span className="text-sm font-medium">
+                      {selectedPrompt 
+                        ? TEST_PROMPTS.find(p => p.id === selectedPrompt)?.title
+                        : 'Select Prompt'
+                      }
+                    </span>
+                  </button>
                 </div>
 
                 {/* Response Area */}
@@ -210,33 +239,17 @@ export default function DemoPage() {
               </div>
             </div>
 
-            {/* Bottom Sheet Trigger - Fixed Position with safe area inset */}
-            <div className="fixed bottom-0 left-0 right-0 w-full bg-[#070B19]/95 backdrop-blur-md border-t border-gray-800/50 pb-[env(safe-area-inset-bottom)] shadow-lg shadow-black/20">
-              <div className="p-4">
-                <button
-                  onClick={() => setShowBottomSheet(true)}
-                  className="w-full py-3.5 px-4 rounded-2xl bg-blue-500/10 border border-blue-500/30 text-blue-400 font-medium flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
-                >
-                  {selectedPersona ? 'Change Selection' : 'Choose Persona'}
-                  <ChevronDown className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-
-            {/* Bottom Sheet - Higher z-index and safe area padding */}
+            {/* Selection Sheets */}
             <AnimatePresence>
-              {showBottomSheet && (
+              {showPersonaSelect && (
                 <>
-                  {/* Backdrop */}
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    onClick={() => setShowBottomSheet(false)}
+                    onClick={() => setShowPersonaSelect(false)}
                     className="fixed inset-0 bg-black/60 z-[60]"
                   />
-                  
-                  {/* Sheet */}
                   <motion.div
                     initial={{ y: '100%' }}
                     animate={{ y: 0 }}
@@ -245,75 +258,89 @@ export default function DemoPage() {
                     className="fixed bottom-0 left-0 right-0 bg-[#0A0B14] rounded-t-[32px] z-[70] max-h-[85vh] overflow-y-auto pb-[calc(2rem+env(safe-area-inset-bottom))]"
                   >
                     <div className="p-4">
-                      {/* Handle */}
                       <div className="w-12 h-1.5 bg-gray-800 rounded-full mx-auto mb-6" />
+                      <h2 className="text-xl font-semibold mb-2">Choose a Persona</h2>
+                      <p className="text-gray-400 text-sm mb-6">Select a test persona to see personalized responses</p>
+                      <div className="grid grid-cols-2 gap-3">
+                        {TEST_PERSONAS.map((persona) => (
+                          <button
+                            key={persona.id}
+                            onClick={() => {
+                              setSelectedPersona(persona.id);
+                              setShowPersonaSelect(false);
+                            }}
+                            className={`p-4 rounded-2xl border text-left transition-all ${
+                              selectedPersona === persona.id
+                                ? `bg-${persona.color}-500/20 border-${persona.color}-500/50`
+                                : 'bg-gray-900/50 border-gray-800/50'
+                            }`}
+                          >
+                            <div className={`w-12 h-12 rounded-2xl bg-${persona.color}-500/20 border border-${persona.color}-500/30 flex items-center justify-center mb-3`}>
+                              {persona.id === 'emily' && <span className="text-2xl">👩‍💻</span>}
+                              {persona.id === 'sophie' && <span className="text-2xl">🤗</span>}
+                              {persona.id === 'tom' && <span className="text-2xl">👨‍🎓</span>}
+                              {persona.id === 'michael' && <span className="text-2xl">👨‍💼</span>}
+                              {persona.id === 'maya' && <span className="text-2xl">🎨</span>}
+                              {persona.id === 'jordan' && <span className="text-2xl">😊</span>}
+                            </div>
+                            <h3 className={`text-base font-medium mb-1 ${
+                              selectedPersona === persona.id ? `text-${persona.color}-400` : 'text-white'
+                            }`}>
+                              {persona.name}
+                            </h3>
+                            <p className="text-sm text-gray-400">{persona.role}</p>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </motion.div>
+                </>
+              )}
 
-                      {!selectedPersona ? (
-                        <>
-                          <h2 className="text-xl font-semibold mb-2">Choose a Persona</h2>
-                          <p className="text-gray-400 text-sm mb-6">Select a test persona to see personalized responses</p>
-                          <div className="grid grid-cols-2 gap-3">
-                            {TEST_PERSONAS.map((persona) => (
-                              <button
-                                key={persona.id}
-                                onClick={() => {
-                                  setSelectedPersona(persona.id);
-                                  setShowBottomSheet(false);
-                                }}
-                                className={`p-4 rounded-2xl border text-left transition-all ${
-                                  selectedPersona === persona.id
-                                    ? `bg-${persona.color}-500/20 border-${persona.color}-500/50`
-                                    : 'bg-gray-900/50 border-gray-800/50'
-                                }`}
-                              >
-                                <div className={`w-12 h-12 rounded-2xl bg-${persona.color}-500/20 border border-${persona.color}-500/30 flex items-center justify-center mb-3`}>
-                                  {persona.id === 'emily' && <span className="text-2xl">👩‍💻</span>}
-                                  {persona.id === 'sophie' && <span className="text-2xl">🤗</span>}
-                                  {persona.id === 'tom' && <span className="text-2xl">👨‍🎓</span>}
-                                  {persona.id === 'michael' && <span className="text-2xl">👨‍💼</span>}
-                                  {persona.id === 'maya' && <span className="text-2xl">🎨</span>}
-                                  {persona.id === 'jordan' && <span className="text-2xl">😊</span>}
-                                </div>
-                                <h3 className={`text-base font-medium mb-1 ${
-                                  selectedPersona === persona.id ? `text-${persona.color}-400` : 'text-white'
-                                }`}>
-                                  {persona.name}
-                                </h3>
-                                <p className="text-sm text-gray-400">{persona.role}</p>
-                              </button>
-                            ))}
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <h2 className="text-xl font-semibold mb-2">Choose a Prompt</h2>
-                          <p className="text-gray-400 text-sm mb-6">Select a test prompt to see the response</p>
-                          <div className="space-y-3">
-                            {TEST_PROMPTS.map((prompt) => (
-                              <button
-                                key={prompt.id}
-                                onClick={() => {
-                                  setSelectedPrompt(prompt.id);
-                                  setShowComparison(true);
-                                  setShowBottomSheet(false);
-                                }}
-                                className={`w-full p-4 rounded-2xl border text-left transition-all ${
-                                  selectedPrompt === prompt.id
-                                    ? 'bg-blue-500/20 border-blue-500/50'
-                                    : 'bg-gray-900/50 border-gray-800/50'
-                                }`}
-                              >
-                                <h3 className={`text-base font-medium mb-2 ${
-                                  selectedPrompt === prompt.id ? 'text-blue-400' : 'text-white'
-                                }`}>
-                                  {prompt.title}
-                                </h3>
-                                <p className="text-gray-400 text-sm">{prompt.prompt}</p>
-                              </button>
-                            ))}
-                          </div>
-                        </>
-                      )}
+              {showPromptSelect && (
+                <>
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    onClick={() => setShowPromptSelect(false)}
+                    className="fixed inset-0 bg-black/60 z-[60]"
+                  />
+                  <motion.div
+                    initial={{ y: '100%' }}
+                    animate={{ y: 0 }}
+                    exit={{ y: '100%' }}
+                    transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                    className="fixed bottom-0 left-0 right-0 bg-[#0A0B14] rounded-t-[32px] z-[70] max-h-[85vh] overflow-y-auto pb-[calc(2rem+env(safe-area-inset-bottom))]"
+                  >
+                    <div className="p-4">
+                      <div className="w-12 h-1.5 bg-gray-800 rounded-full mx-auto mb-6" />
+                      <h2 className="text-xl font-semibold mb-2">Choose a Prompt</h2>
+                      <p className="text-gray-400 text-sm mb-6">Select a test prompt to see the response</p>
+                      <div className="space-y-3">
+                        {TEST_PROMPTS.map((prompt) => (
+                          <button
+                            key={prompt.id}
+                            onClick={() => {
+                              setSelectedPrompt(prompt.id);
+                              setShowComparison(true);
+                              setShowPromptSelect(false);
+                            }}
+                            className={`w-full p-4 rounded-2xl border text-left transition-all ${
+                              selectedPrompt === prompt.id
+                                ? 'bg-blue-500/20 border-blue-500/50'
+                                : 'bg-gray-900/50 border-gray-800/50'
+                            }`}
+                          >
+                            <h3 className={`text-base font-medium mb-2 ${
+                              selectedPrompt === prompt.id ? 'text-blue-400' : 'text-white'
+                            }`}>
+                              {prompt.title}
+                            </h3>
+                            <p className="text-gray-400 text-sm">{prompt.prompt}</p>
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   </motion.div>
                 </>

@@ -160,26 +160,6 @@ export default function Page() {
                 className="flex items-center gap-3 bg-gradient-to-br from-white/[0.02] to-white/[0.05] p-3 rounded-xl border border-white/[0.05] hover:border-orange-500/20 transition-all duration-300"
               >
                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-500/10 to-orange-600/10 flex items-center justify-center">
-                  <Sparkles className="w-4 h-4 text-orange-400" />
-                </div>
-                <span className="text-sm text-gray-400">Smart Context Learning</span>
-              </motion.div>
-              <motion.div 
-                whileHover={{ y: -2 }}
-                className="flex items-center gap-3 bg-gradient-to-br from-white/[0.02] to-white/[0.05] p-3 rounded-xl border border-white/[0.05] hover:border-orange-500/20 transition-all duration-300"
-              >
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-500/10 to-orange-600/10 flex items-center justify-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-orange-400">
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                  </svg>
-                </div>
-                <span className="text-sm text-gray-400">24/7 Social Support</span>
-              </motion.div>
-              <motion.div 
-                whileHover={{ y: -2 }}
-                className="flex items-center gap-3 bg-gradient-to-br from-white/[0.02] to-white/[0.05] p-3 rounded-xl border border-white/[0.05] hover:border-orange-500/20 transition-all duration-300"
-              >
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-500/10 to-orange-600/10 flex items-center justify-center">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-orange-400">
                     <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
                     <path d="m9 12 2 2 4-4"/>

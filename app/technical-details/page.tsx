@@ -69,18 +69,18 @@ export default function TechnicalDetails() {
           animate={{ opacity: 1, y: 0 }}
           className="sticky top-0 z-50 bg-[#070B19]/95 backdrop-blur-md py-4 -mx-6 px-6 border-b border-gray-800/50 mb-16"
         >
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="space-y-4">
-          <h1 className="text-4xl md:text-5xl font-bold">
+              <h1 className="text-3xl md:text-5xl font-bold">
                 Persona: Context-Aware Social AI
           </h1>
-          <p className="text-gray-400 text-lg md:text-xl max-w-2xl">
+              <p className="text-gray-400 text-base md:text-xl max-w-2xl">
                 An AI that learns your personal context automatically—your personality, communication style, and social circle—without requiring manual input.
               </p>
             </div>
             <button
               onClick={() => setIsExpanded(!isExpanded)}
-              className="flex items-center gap-2 px-4 py-2 bg-orange-500/10 rounded-full text-orange-400 text-sm hover:bg-orange-500/20 transition-colors whitespace-nowrap ml-4"
+              className="flex items-center gap-2 px-4 py-2 bg-orange-500/10 rounded-full text-orange-400 text-sm hover:bg-orange-500/20 transition-colors whitespace-nowrap"
             >
               {isExpanded ? (
                 <>
@@ -97,7 +97,7 @@ export default function TechnicalDetails() {
           </div>
           
           {isExpanded && (
-            <div className="flex gap-4 mt-4 overflow-x-auto pb-2">
+            <div className="flex flex-wrap gap-2 mt-4">
               <a href="#mission" className="px-4 py-2 bg-orange-500/10 rounded-full text-orange-400 text-sm whitespace-nowrap hover:bg-orange-500/20 transition-colors">Mission & Problem</a>
               <a href="#pipeline" className="px-4 py-2 bg-blue-500/10 rounded-full text-blue-400 text-sm whitespace-nowrap hover:bg-blue-500/20 transition-colors">Technical Pipeline</a>
               <a href="#unique" className="px-4 py-2 bg-purple-500/10 rounded-full text-purple-400 text-sm whitespace-nowrap hover:bg-purple-500/20 transition-colors">Unique Features</a>
@@ -213,72 +213,44 @@ export default function TechnicalDetails() {
               </div>
             </div>
           </motion.section>
-
-              {/* Technical Stack */}
-          <motion.section
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="space-y-6"
-          >
-            <h2 className="text-2xl font-semibold text-purple-400">Modern Stack</h2>
-            <div className="bg-gray-900/50 backdrop-blur-md rounded-2xl p-6 space-y-4">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="bg-gray-800/50 p-4 rounded-xl text-center">
-                  <p className="text-sm text-gray-400">Frontend</p>
-                  <p className="font-medium">Next.js 14</p>
-                </div>
-                <div className="bg-gray-800/50 p-4 rounded-xl text-center">
-                      <p className="text-sm text-gray-400">Backend</p>
-                      <p className="font-medium">FastAPI</p>
-                </div>
-                <div className="bg-gray-800/50 p-4 rounded-xl text-center">
-                  <p className="text-sm text-gray-400">Database</p>
-                      <p className="font-medium">Neo4j Graph</p>
-                    </div>
-                    <div className="bg-gray-800/50 p-4 rounded-xl text-center">
-                      <p className="text-sm text-gray-400">Learning</p>
-                      <p className="font-medium">Bayesian RL</p>
-                    </div>
-                  </div>
-                </div>
-              </motion.section>
             </motion.div>
           ) : (
             // Full Technical Report View
             <motion.div
               key="full-report"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               className="space-y-16 prose prose-invert max-w-none"
             >
               {/* Table of Contents */}
-              <div className="bg-gray-900/50 backdrop-blur-md rounded-2xl p-5 border border-blue-900/20">
-                <h2 className="text-xl font-medium text-blue-400 mb-3 mt-0">Table of Contents</h2>
-                <ul className="space-y-1.5 list-none pl-0">
-                  <li>
-                    <a href="#mission" className="text-gray-300 hover:text-blue-400 transition-colors no-underline">1. Mission & Problem Statement</a>
-                  </li>
-                  <li>
-                    <a href="#pipeline" className="text-gray-300 hover:text-blue-400 transition-colors no-underline">2. Core Technical Pipeline</a>
-                    <ul className="space-y-1 mt-1 ml-4 list-none">
-                      <li><a href="#listener" className="text-gray-400 hover:text-blue-400 transition-colors no-underline text-sm">2.1 Listener: Autonomous Context Learning</a></li>
-                      <li><a href="#fetcher" className="text-gray-400 hover:text-blue-400 transition-colors no-underline text-sm">2.2 Fetcher: Real-Time Context Retrieval</a></li>
-                      <li><a href="#writer" className="text-gray-400 hover:text-blue-400 transition-colors no-underline text-sm">2.3 Writer: Personalized Response Generation</a></li>
-                      <li><a href="#adjuster" className="text-gray-400 hover:text-blue-400 transition-colors no-underline text-sm">2.4 Adjuster: Style & Safety Refinement</a></li>
-                    </ul>
-                  </li>
-                  <li>
-                    <a href="#unique" className="text-gray-300 hover:text-blue-400 transition-colors no-underline">3. What Makes Persona Unique</a>
-                  </li>
-                  <li>
-                    <a href="#timeline" className="text-gray-300 hover:text-blue-400 transition-colors no-underline">4. Implementation Timeline</a>
-                  </li>
-                  <li>
-                    <a href="#highlights" className="text-gray-300 hover:text-blue-400 transition-colors no-underline">5. Technical Highlights</a>
-                  </li>
-                </ul>
+              <div className="space-y-6">
+                <div className="bg-gray-900/30 rounded-xl p-5">
+                  <h2 className="text-xl font-medium text-blue-400 mb-3">Table of Contents</h2>
+                  <ul className="space-y-1.5 list-none pl-0">
+                    <li>
+                      <a href="#mission" className="text-gray-300 hover:text-blue-400 transition-colors no-underline">1. Mission & Problem Statement</a>
+                    </li>
+                    <li>
+                      <a href="#pipeline" className="text-gray-300 hover:text-blue-400 transition-colors no-underline">2. Core Technical Pipeline</a>
+                      <ul className="space-y-1 mt-1 ml-4 list-none">
+                        <li><a href="#listener" className="text-gray-400 hover:text-blue-400 transition-colors no-underline text-sm">2.1 Listener: Autonomous Context Learning</a></li>
+                        <li><a href="#fetcher" className="text-gray-400 hover:text-blue-400 transition-colors no-underline text-sm">2.2 Fetcher: Real-Time Context Retrieval</a></li>
+                        <li><a href="#writer" className="text-gray-400 hover:text-blue-400 transition-colors no-underline text-sm">2.3 Writer: Personalized Response Generation</a></li>
+                        <li><a href="#adjuster" className="text-gray-400 hover:text-blue-400 transition-colors no-underline text-sm">2.4 Adjuster: Style & Safety Refinement</a></li>
+                      </ul>
+                    </li>
+                    <li>
+                      <a href="#unique" className="text-gray-300 hover:text-blue-400 transition-colors no-underline">3. What Makes Persona Unique</a>
+                    </li>
+                    <li>
+                      <a href="#timeline" className="text-gray-300 hover:text-blue-400 transition-colors no-underline">4. Implementation Timeline</a>
+                    </li>
+                    <li>
+                      <a href="#highlights" className="text-gray-300 hover:text-blue-400 transition-colors no-underline">5. Technical Highlights</a>
+                    </li>
+                  </ul>
+                </div>
               </div>
 
               {/* Mission Statement */}
@@ -309,13 +281,13 @@ export default function TechnicalDetails() {
                   <h2 className="text-3xl font-bold text-purple-400 mb-6 pb-2 border-b border-purple-900/20">2. Core Technical Pipeline</h2>
                   <div className="space-y-8">
                     {/* Listener Component */}
-                    <div id="listener" className="scroll-mt-32 bg-gray-900/30 rounded-xl p-5">
+                    <div id="listener" className="scroll-mt-16 md:scroll-mt-32 bg-gray-900/30 rounded-xl p-4 md:p-5">
                       <h3 className="text-2xl font-semibold text-blue-400 mb-4">2.1 Listener: Autonomous Context Learning</h3>
                       <div className="space-y-3">
                         <p className="text-gray-300"><span className="font-medium">Purpose:</span> Learn about the user's personality, social circle, and communication style passively.</p>
                         <div>
                           <p className="text-gray-300 font-medium mb-2">How It Works:</p>
-                          <ul className="space-y-4 text-gray-300">
+                          <ul className="list-disc list-inside space-y-2 text-gray-300 text-sm md:text-base ml-2 md:ml-4">
                             <li className="space-y-1">
                               <p className="font-medium text-blue-400">Entity Extraction</p>
                               <p>Identifies people, events, and recurring themes (e.g., "work stress").</p>
@@ -346,7 +318,7 @@ export default function TechnicalDetails() {
                     </div>
 
                     {/* Fetcher Component */}
-                    <div id="fetcher" className="scroll-mt-32 bg-gray-900/30 rounded-xl p-5">
+                    <div id="fetcher" className="scroll-mt-16 md:scroll-mt-32 bg-gray-900/30 rounded-xl p-4 md:p-5">
                       <h3 className="text-2xl font-semibold text-purple-400 mb-4">2.2 Fetcher: Real-Time Context Retrieval</h3>
                       <div className="space-y-3">
                         <p className="text-gray-300"><span className="font-medium">Purpose:</span> Fetch relevant insights about the user instantly.</p>

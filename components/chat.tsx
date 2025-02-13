@@ -21,6 +21,7 @@ interface ChatProps {
   selectedModelId: string;
   selectedVisibilityType: VisibilityType;
   isReadonly: boolean;
+  contextPrompt?: string;
 }
 
 export function Chat({
@@ -29,6 +30,7 @@ export function Chat({
   selectedModelId,
   selectedVisibilityType,
   isReadonly,
+  contextPrompt
 }: ChatProps) {
   const { mutate } = useSWRConfig();
   const [messages, setMessages] = useState<Message[]>(initialMessages);
@@ -148,32 +150,60 @@ export function Chat({
   }, []);
 
   return (
-    <>
-      <div className="flex flex-col h-full">
-        <ChatHeader
-          chatId={id}
-          selectedModelId={selectedModelId}
-          selectedVisibilityType={selectedVisibilityType}
-          isReadonly={isReadonly}
-        />
+    <div className="flex h-[100dvh] bg-[#070B19] text-white">
+      {/* Background Effects */}
+      <div className="fixed inset-0 w-full h-full overflow-hidden pointer-events-none">
+        <div className="absolute inset-0 bg-[#070B19]" />
+        <div className="absolute -top-[20%] -left-[20%] w-[80%] h-[80%] bg-[#050709] rounded-full blur-[100px] animate-swoosh" />
+        <div className="absolute -bottom-[20%] -right-[20%] w-[80%] h-[80%] bg-[#050709] rounded-full blur-[100px] animate-swoosh-reverse" />
+        <div className="absolute top-[-20%] right-[-20%] w-[90%] h-[90%] bg-[#1B3A77]/20 rounded-full blur-[120px] animate-wild" />
+        <div className="absolute bottom-[-10%] left-[-10%] w-[70%] h-[70%] bg-[#1B3A77]/20 rounded-full blur-[120px] animate-wild" />
+        <div className="absolute inset-0 bg-noise opacity-[0.02] mix-blend-soft-light" />
+      </div>
 
-        <div className="flex-1 overflow-hidden">
-          <Messages
+      {/* Main Chat Container */}
+      <div className="flex flex-col flex-1 h-full relative">
+        {/* Header Section */}
+        <div className="flex-none border-b border-white/[0.08] bg-[#070B19]/80 backdrop-blur-xl safe-top">
+          <ChatHeader
             chatId={id}
-            isLoading={isLoading}
-            votes={votes}
-            messages={messages}
-            setMessages={setMessages}
-            reload={reload}
+            selectedModelId={selectedModelId}
+            selectedVisibilityType={selectedVisibilityType}
             isReadonly={isReadonly}
-            isBlockVisible={isBlockVisible}
-            append={append}
           />
+
+          {contextPrompt && (
+            <div className="px-4 py-4 border-t border-white/[0.08]">
+              <div className="max-w-4xl mx-auto">
+                <div className="bg-white/[0.03] backdrop-blur-xl rounded-2xl p-4 text-gray-300 text-sm leading-relaxed border border-white/[0.08] shadow-lg shadow-black/5">
+                  {contextPrompt}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
-        <div className="flex-shrink-0 bg-background">
+        {/* Messages Section */}
+        <div className="flex-1 overflow-y-auto min-h-0 px-4 overscroll-none">
+          <div className="max-w-4xl mx-auto h-full flex flex-col justify-end">
+            <Messages
+              chatId={id}
+              isLoading={isLoading}
+              votes={votes}
+              messages={messages}
+              setMessages={setMessages}
+              reload={reload}
+              isReadonly={isReadonly}
+              isBlockVisible={isBlockVisible}
+              append={append}
+            />
+          </div>
+        </div>
+
+        {/* Input Section */}
+        <div className="flex-none border-t border-white/[0.08] bg-[#070B19]/80 backdrop-blur-xl safe-bottom">
           <form 
-            className="flex mx-auto px-4 py-3 gap-2 w-full md:max-w-3xl"
+            className="max-w-4xl mx-auto px-4 py-4"
             onSubmit={handleSubmit}
           >
             {!isReadonly && (
@@ -189,6 +219,7 @@ export function Chat({
                 messages={messages}
                 setMessages={setMessages}
                 append={append}
+                className="w-full bg-white/[0.03] backdrop-blur-xl border border-white/[0.08] rounded-2xl shadow-lg shadow-black/5 transition-all duration-200 focus-within:border-blue-500/30 focus-within:bg-white/[0.06] focus-within:shadow-blue-500/10"
               />
             )}
           </form>
@@ -211,6 +242,6 @@ export function Chat({
         votes={votes}
         isReadonly={isReadonly}
       />
-    </>
+    </div>
   );
 }

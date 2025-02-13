@@ -46,114 +46,127 @@ export default function LandingPage() {
       </div>
 
       {/* Content */}
-      <div className="w-full container mx-auto px-5 sm:px-6 relative py-8 sm:py-12 md:py-0 space-y-12 sm:space-y-16">
-        {/* Main Grid */}
-        <div className="grid lg:grid-cols-2 gap-12 sm:gap-16 md:gap-20 items-center">
-          {/* Left Column - Hero Content */}
-          <div className="space-y-8 sm:space-y-10 text-center lg:text-left">
-            <div className="space-y-4 sm:space-y-6">
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-gray-100 via-blue-100 to-white tracking-tight leading-[1.1]">
-                Persona
-              </h1>
-              <p className="text-xl sm:text-2xl lg:text-3xl text-blue-200/90 font-medium leading-relaxed">
-                A social AI that learns your personal context for you
-              </p>
-            </div>
-            <p className="text-base sm:text-lg text-gray-300/90 max-w-xl mx-auto lg:mx-0 leading-relaxed">
-              No more personal-context dumping to ChatGPT. From quick social opinions to deeper self-reflection, 
-              Persona learns your personality, communication style, and social circle automatically.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 items-center justify-center lg:justify-start">
-              <Link href="/login" className="w-full sm:w-auto">
-                <Button className="inline-flex items-center justify-center gap-2 whitespace-nowrap h-12 w-full sm:w-auto bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-lg px-8 rounded-2xl active:scale-[0.98] transition-all duration-150 shadow-lg hover:shadow-blue-500/25 border-0 font-medium tracking-[-0.01em]">
-                  Log in <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="ml-1 h-5 w-5 transition-transform group-hover:translate-x-1"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-                </Button>
-              </Link>
-              <Link href="/register" className="text-gray-400 hover:text-white transition-colors text-lg py-3 px-6 rounded-xl hover:bg-white/5 active:bg-white/10 w-full sm:w-auto text-center">
-                Sign up
-              </Link>
-            </div>
-            <div className="flex items-center justify-center lg:justify-start gap-4">
-              <Link href="/technical-details">
-                <Button className="group flex items-center gap-2.5 px-5 py-2.5 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] active:bg-white/[0.08] border border-white/[0.05] hover:border-blue-500/20 transition-all duration-300 backdrop-blur-xl text-[15px] font-medium text-gray-400/90 hover:text-white shadow-sm shadow-black/5">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 text-blue-400/80 transition-transform group-hover:scale-110 duration-300">
-                    <path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/>
+      <div className="w-full min-h-screen flex flex-col">
+        <div className="flex-1 container mx-auto px-5 relative space-y-8 sm:space-y-16 pb-safe">
+          {/* Main Content */}
+          <div className="pt-12 sm:pt-16 md:pt-20">
+            {/* Hero Section */}
+            <div className="grid lg:grid-cols-2 gap-8 sm:gap-16 md:gap-20 items-center">
+              {/* Left Column - Hero Content */}
+              <div className="space-y-6 sm:space-y-10 text-center lg:text-left">
+                <div className="space-y-3 sm:space-y-6">
+                  <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-gray-100 via-blue-100 to-white tracking-tight leading-[1.1]">
+                    Persona
+                  </h1>
+                  <p className="text-lg sm:text-2xl lg:text-3xl text-blue-200/90 font-medium leading-relaxed">
+                    A social AI that learns your personal context for you
+                  </p>
+                </div>
+                <p className="text-base sm:text-lg text-gray-300/90 max-w-xl mx-auto lg:mx-0 leading-relaxed">
+                  No more personal-context dumping to ChatGPT. From quick social opinions to deeper self-reflection, 
+                  Persona learns your personality, communication style, and social circle automatically.
+                </p>
+                
+                {/* Primary Actions */}
+                <div className="flex flex-col gap-3 px-4 sm:px-0">
+                  <Link href="/login" className="w-full sm:w-auto">
+                    <Button className="inline-flex items-center justify-center gap-2 whitespace-nowrap h-12 w-full bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-base sm:text-lg px-6 rounded-2xl active:scale-[0.98] transition-all duration-150 shadow-lg hover:shadow-blue-500/25 border-0 font-medium tracking-[-0.01em]">
+                      Log in <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="ml-1 h-5 w-5 transition-transform group-hover:translate-x-1"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                    </Button>
+                  </Link>
+                  <Link href="/register" className="w-full sm:w-auto">
+                    <Button className="inline-flex items-center justify-center gap-2 whitespace-nowrap h-12 w-full bg-white/[0.05] hover:bg-white/[0.08] active:bg-white/[0.12] text-base sm:text-lg px-6 rounded-2xl active:scale-[0.98] transition-all duration-150 font-medium tracking-[-0.01em] backdrop-blur-xl border border-white/10 text-white shadow-lg shadow-black/5">
+                      Sign up <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="ml-1 h-5 w-5 transition-transform group-hover:translate-x-1"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                    </Button>
+                  </Link>
+                </div>
+
+                {/* Secondary Actions */}
+                <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 px-4 sm:px-0">
+                  <Link href="/technical-details" className="flex-1 sm:flex-none">
+                    <Button className="group flex items-center justify-center gap-2.5 px-4 py-2.5 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] active:bg-white/[0.08] border border-white/[0.05] hover:border-blue-500/20 transition-all duration-300 backdrop-blur-xl text-[14px] sm:text-[15px] font-medium text-gray-400/90 hover:text-white shadow-sm shadow-black/5 w-full sm:w-auto">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 text-blue-400/80 transition-transform group-hover:scale-110 duration-300">
+                        <path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/>
+                      </svg>
+                      <span className="tracking-tight">Technical Details</span>
+                    </Button>
+                  </Link>
+                  <Link href="/demo" className="flex-1 sm:flex-none">
+                    <Button className="group flex items-center justify-center gap-2.5 px-4 py-2.5 rounded-xl bg-orange-500/10 hover:bg-orange-500/20 active:bg-orange-500/30 border border-orange-500/20 hover:border-orange-500/30 transition-all duration-300 backdrop-blur-xl text-[14px] sm:text-[15px] font-medium text-orange-400/90 hover:text-orange-400 shadow-sm shadow-black/5 w-full sm:w-auto">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 text-orange-400/80 transition-transform group-hover:scale-110 duration-300">
+                        <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
+                        <path d="m9 12 2 2 4-4"/>
+                      </svg>
+                      <span className="tracking-tight">Try Demo</span>
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+
+              {/* Right Column - Feature Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 px-4 sm:px-0">
+                {/* Personal Context Card */}
+                <div className="group bg-white/[0.03] backdrop-blur-xl rounded-2xl p-5 sm:p-7 border border-white/[0.08] hover:border-blue-500/30 transition-all duration-300 hover:translate-y-[-2px] hover:bg-white/[0.06] active:translate-y-[1px] hover:shadow-xl hover:shadow-blue-500/[0.1]">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-7 sm:h-8 w-7 sm:w-8 text-blue-400/90 mb-3 sm:mb-4 transition-transform group-hover:scale-110 duration-300">
+                    <path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/>
+                    <path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/>
+                    <path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4"/>
                   </svg>
-                  <span className="tracking-tight">Technical Details</span>
-                </Button>
-              </Link>
-              <Link href="/demo">
-                <Button className="group flex items-center gap-2.5 px-5 py-2.5 rounded-xl bg-orange-500/10 hover:bg-orange-500/20 active:bg-orange-500/30 border border-orange-500/20 hover:border-orange-500/30 transition-all duration-300 backdrop-blur-xl text-[15px] font-medium text-orange-400/90 hover:text-orange-400 shadow-sm shadow-black/5">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 text-orange-400/80 transition-transform group-hover:scale-110 duration-300">
-                    <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
-                    <path d="m9 12 2 2 4-4"/>
+                  <h3 className="text-base sm:text-lg font-semibold mb-2 sm:mb-2.5 tracking-tight text-white/90">Personal Context</h3>
+                  <p className="text-[13px] sm:text-[15px] text-gray-400/90 leading-relaxed">Automatically learns about you through natural conversations.</p>
+                </div>
+
+                {/* Social Assistant Card */}
+                <div className="group bg-white/[0.03] backdrop-blur-xl rounded-2xl p-5 sm:p-7 border border-white/[0.08] hover:border-blue-500/30 transition-all duration-300 hover:translate-y-[-2px] hover:bg-white/[0.06] active:translate-y-[1px] hover:shadow-xl hover:shadow-blue-500/[0.1]">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-7 sm:h-8 w-7 sm:w-8 text-blue-400/90 mb-3 sm:mb-4 transition-transform group-hover:scale-110 duration-300">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                   </svg>
-                  <span className="tracking-tight">Try Demo</span>
-                </Button>
-              </Link>
+                  <h3 className="text-base sm:text-lg font-semibold mb-2 sm:mb-2.5 tracking-tight text-white/90">Social Assistant</h3>
+                  <p className="text-[13px] sm:text-[15px] text-gray-400/90 leading-relaxed">From texts to Instagram posts—get personalized social insights.</p>
+                </div>
+
+                {/* Quick Insights Card */}
+                <div className="group bg-white/[0.03] backdrop-blur-xl rounded-2xl p-5 sm:p-7 border border-white/[0.08] hover:border-blue-500/30 transition-all duration-300 hover:translate-y-[-2px] hover:bg-white/[0.06] active:translate-y-[1px] hover:shadow-xl hover:shadow-blue-500/[0.1]">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-7 sm:h-8 w-7 sm:w-8 text-blue-400/90 mb-3 sm:mb-4 transition-transform group-hover:scale-110 duration-300">
+                    <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>
+                  </svg>
+                  <h3 className="text-base sm:text-lg font-semibold mb-2 sm:mb-2.5 tracking-tight text-white/90">Quick Insights</h3>
+                  <p className="text-[13px] sm:text-[15px] text-gray-400/90 leading-relaxed">Instant help for social decisions without lengthy explanations.</p>
+                </div>
+
+                {/* Smart Learning Card */}
+                <div className="group bg-white/[0.03] backdrop-blur-xl rounded-2xl p-5 sm:p-7 border border-white/[0.08] hover:border-blue-500/30 transition-all duration-300 hover:translate-y-[-2px] hover:bg-white/[0.06] active:translate-y-[1px] hover:shadow-xl hover:shadow-blue-500/[0.1]">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-7 sm:h-8 w-7 sm:w-8 text-blue-400/90 mb-3 sm:mb-4 transition-transform group-hover:scale-110 duration-300">
+                    <line x1="6" y1="3" x2="6" y2="15"/>
+                    <circle cx="18" cy="6" r="3"/>
+                    <circle cx="6" cy="18" r="3"/>
+                    <path d="M18 9a9 9 0 0 1-9 9"/>
+                  </svg>
+                  <h3 className="text-base sm:text-lg font-semibold mb-2 sm:mb-2.5 tracking-tight text-white/90">Smart Learning</h3>
+                  <p className="text-[13px] sm:text-[15px] text-gray-400/90 leading-relaxed">Adapts to your communication style and preferences.</p>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Right Column - Feature Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Personal Context Card */}
-            <div className="group bg-white/[0.03] backdrop-blur-xl rounded-2xl p-6 sm:p-7 border border-white/[0.08] hover:border-blue-500/30 transition-all duration-300 hover:translate-y-[-2px] hover:bg-white/[0.06] active:translate-y-[1px] hover:shadow-xl hover:shadow-blue-500/[0.1]">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-8 w-8 text-blue-400/90 mb-4 transition-transform group-hover:scale-110 duration-300">
-                <path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/>
-                <path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/>
-                <path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4"/>
-              </svg>
-              <h3 className="text-lg font-semibold mb-2.5 tracking-tight text-white/90">Personal Context</h3>
-              <p className="text-[15px] text-gray-400/90 leading-relaxed">Automatically learns about you through natural conversations.</p>
+          {/* Stats Section - Now with iOS-style bottom safe area */}
+          <div className="mt-auto pt-8 pb-8 sm:pb-12">
+            <div className="flex flex-col sm:flex-row justify-center gap-8 sm:gap-16 text-center text-gray-400/90 px-4 sm:px-0">
+              <div className="group hover:translate-y-[-2px] transition-all duration-200">
+                <div className="text-2xl sm:text-4xl font-semibold text-white mb-1 sm:mb-2 group-hover:text-blue-400/90 transition-colors">Zero</div>
+                <div className="text-xs sm:text-sm tracking-wide uppercase">Context Dumping</div>
+              </div>
+              <div className="hidden sm:block w-px bg-gradient-to-b from-gray-800/30 via-gray-800/80 to-gray-800/30" />
+              <div className="group hover:translate-y-[-2px] transition-all duration-200">
+                <div className="text-2xl sm:text-4xl font-semibold text-white mb-1 sm:mb-2 group-hover:text-blue-400/90 transition-colors">24/7</div>
+                <div className="text-xs sm:text-sm tracking-wide uppercase">Social Support</div>
+              </div>
+              <div className="hidden sm:block w-px bg-gradient-to-b from-gray-800/30 via-gray-800/80 to-gray-800/30" />
+              <div className="group hover:translate-y-[-2px] transition-all duration-200">
+                <div className="text-2xl sm:text-4xl font-semibold text-white mb-1 sm:mb-2 group-hover:text-blue-400/90 transition-colors">Instant</div>
+                <div className="text-xs sm:text-sm tracking-wide uppercase">Personalization</div>
+              </div>
             </div>
-
-            {/* Social Assistant Card */}
-            <div className="group bg-white/[0.03] backdrop-blur-xl rounded-2xl p-6 sm:p-7 border border-white/[0.08] hover:border-blue-500/30 transition-all duration-300 hover:translate-y-[-2px] hover:bg-white/[0.06] active:translate-y-[1px] hover:shadow-xl hover:shadow-blue-500/[0.1]">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-8 w-8 text-blue-400/90 mb-4 transition-transform group-hover:scale-110 duration-300">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-              </svg>
-              <h3 className="text-lg font-semibold mb-2.5 tracking-tight text-white/90">Social Assistant</h3>
-              <p className="text-[15px] text-gray-400/90 leading-relaxed">From texts to Instagram posts—get personalized social insights.</p>
-            </div>
-
-            {/* Quick Insights Card */}
-            <div className="group bg-white/[0.03] backdrop-blur-xl rounded-2xl p-6 sm:p-7 border border-white/[0.08] hover:border-blue-500/30 transition-all duration-300 hover:translate-y-[-2px] hover:bg-white/[0.06] active:translate-y-[1px] hover:shadow-xl hover:shadow-blue-500/[0.1]">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-8 w-8 text-blue-400/90 mb-4 transition-transform group-hover:scale-110 duration-300">
-                <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>
-              </svg>
-              <h3 className="text-lg font-semibold mb-2.5 tracking-tight text-white/90">Quick Insights</h3>
-              <p className="text-[15px] text-gray-400/90 leading-relaxed">Instant help for social decisions without lengthy explanations.</p>
-            </div>
-
-            {/* Smart Learning Card */}
-            <div className="group bg-white/[0.03] backdrop-blur-xl rounded-2xl p-6 sm:p-7 border border-white/[0.08] hover:border-blue-500/30 transition-all duration-300 hover:translate-y-[-2px] hover:bg-white/[0.06] active:translate-y-[1px] hover:shadow-xl hover:shadow-blue-500/[0.1]">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-8 w-8 text-blue-400/90 mb-4 transition-transform group-hover:scale-110 duration-300">
-                <line x1="6" y1="3" x2="6" y2="15"/>
-                <circle cx="18" cy="6" r="3"/>
-                <circle cx="6" cy="18" r="3"/>
-                <path d="M18 9a9 9 0 0 1-9 9"/>
-              </svg>
-              <h3 className="text-lg font-semibold mb-2.5 tracking-tight text-white/90">Smart Learning</h3>
-              <p className="text-[15px] text-gray-400/90 leading-relaxed">Adapts to your communication style and preferences.</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Stats Section */}
-        <div className="flex flex-col sm:flex-row justify-center gap-8 sm:gap-16 text-center text-gray-400/90">
-          <div className="group hover:translate-y-[-2px] transition-all duration-200">
-            <div className="text-3xl sm:text-4xl font-semibold text-white mb-2 group-hover:text-blue-400/90 transition-colors">Zero</div>
-            <div className="text-sm tracking-wide uppercase">Context Dumping</div>
-          </div>
-          <div className="hidden sm:block w-px bg-gradient-to-b from-gray-800/30 via-gray-800/80 to-gray-800/30" />
-          <div className="group hover:translate-y-[-2px] transition-all duration-200">
-            <div className="text-3xl sm:text-4xl font-semibold text-white mb-2 group-hover:text-blue-400/90 transition-colors">24/7</div>
-            <div className="text-sm tracking-wide uppercase">Social Support</div>
-          </div>
-          <div className="hidden sm:block w-px bg-gradient-to-b from-gray-800/30 via-gray-800/80 to-gray-800/30" />
-          <div className="group hover:translate-y-[-2px] transition-all duration-200">
-            <div className="text-3xl sm:text-4xl font-semibold text-white mb-2 group-hover:text-blue-400/90 transition-colors">Instant</div>
-            <div className="text-sm tracking-wide uppercase">Personalization</div>
           </div>
         </div>
       </div>

@@ -1,6 +1,7 @@
 # Persona AI
 
 A personalized AI chat app that learns about you through conversations and provides insights about your personality, conversation patterns, and interests.  
+
 Backend is not publicly available.
 
 ## Features
